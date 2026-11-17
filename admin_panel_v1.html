@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin Panel</title>
+<style>
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; background: #111827; color: #ffffff; }
+.wrap { max-width: 400px; margin: 0 auto; padding: 16px; }
+.hidden { display: none !important; }
+
+/* Login */
+.login-card { background: #1f2a3a; border: 1.5px solid #c9a86a; border-radius: 14px; padding: 22px 18px; margin-top: 40px; }
+.logo-wrap { display: flex; justify-content: center; margin-bottom: 14px; }
+.logo-wrap img { width: 96px; height: 96px; border-radius: 50%; object-fit: contain; background: #ffffff; }
+.login-card h1 { font-size: 18px; font-weight: 500; text-align: center; margin: 0 0 16px; letter-spacing: 1px; }
+label { display: block; font-size: 12px; color: #cfd8e3; margin: 10px 0 4px; }
+input { width: 100%; background: rgba(255,255,255,0.08); border: 0.5px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 10px 12px; color: #ffffff; font-size: 14px; outline: none; }
+input::placeholder { color: #8a96a6; }
+.btn { width: 100%; background: #1e3a6e; color: #ffffff; border: 1px solid #c9a86a; border-radius: 999px; padding: 11px; font-size: 15px; font-weight: 500; margin-top: 16px; cursor: pointer; }
+.error { color: #f8a5a5; font-size: 12px; text-align: center; margin-top: 10px; min-height: 16px; }
+
+/* Main bar */
+.topbar { background: #1e3a6e; border: 1.5px solid #c9a86a; border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand img { width: 40px; height: 40px; border-radius: 50%; object-fit: contain; background: #ffffff; }
+.brand span { font-size: 14px; font-weight: 500; }
+.menu-btn { background: none; border: none; color: #ffffff; font-size: 22px; cursor: pointer; line-height: 1; }
+.pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.pill { background: #1e3a6e; color: #ffffff; border: 1px solid #c9a86a; border-radius: 999px; padding: 9px 10px; font-size: 13px; text-align: center; cursor: pointer; }
+.pill.active { background: #c9a86a; color: #111827; }
+
+/* Profile card */
+.profile { background: #1f2a3a; border: 1.5px solid #c9a86a; border-radius: 14px; padding: 16px; margin-top: 14px; }
+.profile .row { font-size: 13px; color: #cfd8e3; margin: 4px 0; }
+.profile .row strong { color: #ffffff; font-weight: 500; }
+.designation { display: inline-block; margin-top: 10px; background: #1e3a6e; border: 1px solid #c9a86a; border-radius: 999px; padding: 4px 14px; font-size: 12px; }
+
+.section { background: #1f2a3a; border: 1.5px solid #c9a86a; border-radius: 14px; padding: 16px; margin-top: 14px; min-height: 80px; font-size: 13px; color: #cfd8e3; }
+/* Sidebar */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; z-index: 10; }
+.overlay.open { display: block; }
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; max-width: 85%; background: #1f2a3a; border-right: 1.5px solid #c9a86a; transform: translateX(-100%); transition: transform 0.25s ease; z-index: 11; overflow-y: auto; padding: 16px 14px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+.sidebar.open { transform: translateX(0); }
+.sidebar h3 { font-size: 11px; color: #c9a86a; letter-spacing: 1px; margin: 14px 0 6px; font-weight: 500; }
+.sidebar h3:first-child { margin-top: 0; }
+.sidebar .item { color: #ffffff; font-size: 13px; padding: 9px 10px; border-radius: 8px; cursor: pointer; }
+.sidebar .item:hover, .sidebar .item:active { background: rgba(255,255,255,0.08); }
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay"></div>
+<aside class="sidebar" id="sidebar" aria-label="Main menu">
+  <h3>MAIN</h3>
+  <div class="item" data-item="Approval">Approval</div>
+  <div class="item" data-item="Registration">Registration</div>
+  <div class="item" data-item="Dispatch">Dispatch</div>
+  <div class="item" data-item="Review">Review</div>
+  <h3>SALES</h3>
+  <div class="item" data-item="Orders">Orders</div>
+  <div class="item" data-item="Order Invoicing">Order Invoicing</div>
+  <div class="item" data-item="Dispatch Print">Dispatch Print aur Summary</div>
+  <div class="item" data-item="Bulk Rate">Bulk Rate</div>
+  <div class="item" data-item="Packs 6+2 aur 12+4">Packs 6+2 aur 12+4</div>
+  <div class="item" data-item="Discounts">Special Discounts</div>
+  <div class="item" data-item="Promo">Promo aur Offer</div>
+  <div class="item" data-item="Noor Coins">Noor Coins (Tokens)</div>
+  <div class="item" data-item="Khizr Rewards">Khizr Rewards</div>
+  <div class="item" data-item="Token Table">Token Table</div>
+  <h3>USERS AUR IDs</h3>
+  <div class="item" data-item="User IDs">User IDs</div>
+  <div class="item" data-item="Employer IDs">Employer IDs</div>
+  <div class="item" data-item="Order Booker IDs">Order Booker IDs</div>
+  <div class="item" data-item="Shopkeepers">Shopkeepers</div>
+  <div class="item" data-item="Shop Registration">Shop Registration</div>
+  <h3>PRODUCTS AUR OPERATIONS</h3>
+  <div class="item" data-item="Products">Products aur Images</div>
+  <div class="item" data-item="Attendance aur KPIs">Attendance aur KPIs</div>
+  <div class="item" data-item="Outlet Assign">Outlet Assign</div>
+  <div class="item" data-item="Dispatch Dispatch">Dispatch Print</div>
+  <h3>SETTINGS AUR REPORTS</h3>
+  <div class="item" data-item="Account Number">Account Number</div>
+  <div class="item" data-item="Reports">Reports</div>
+  <div class="item" data-item="Hidden Cards">Hidden Cards</div>
+  <h3>ACCOUNT</h3>
+  <div class="item" data-item="Logout" id="sideLogout">Logout</div>
+</aside>
+<div class="wrap">
+
+  <!-- LOGIN SCREEN -->
+  <section id="loginScreen">
+    <div class="login-card">
+      <div class="logo-wrap"><img src="/_blob/2aa0bf5ee0039f8ecfbda30873a1acc5" alt="Aab-e-Khizri logo"></div>
+      <h1>ADMIN LOGIN</h1>
+      <label for="adminId">ID</label>
+      <input id="adminId" type="text" placeholder="Admin ID">
+      <label for="adminPass">Password</label>
+      <input id="adminPass" type="password" placeholder="Password">
+      <button class="btn" id="loginBtn">Login</button>
+      <div class="error" id="loginError"></div>
+    </div>
+  </section>
+
+  <!-- MAIN MENU -->
+  <section id="mainScreen" class="hidden">
+    <div class="topbar">
+      <div class="brand">
+        <img src="/_blob/2aa0bf5ee0039f8ecfbda30873a1acc5" alt="Aab-e-Khizri logo">
+        <span>Admin</span>
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">&#9776;</button>
+    </div>
+
+    <div class="pills">
+      <div class="pill active" data-tab="approval">Approval</div>
+    </div>
+
+    <div class="profile">
+      <div class="row"><strong id="profName">Admin</strong></div>
+      <div class="row">ID: <strong id="profId">-</strong></div>
+      <span class="designation" id="profDesignation">Designation: Admin</span>
+    </div>
+
+    <div class="section" id="tabContent">Approval section (abhi khali hai).</div>
+
+    <p style="text-align: center; margin-top: 14px;"><button class="btn" id="logoutBtn" style="width: auto; padding: 8px 18px; font-size: 13px;">Logout</button></p>
+  </section>
+
+</div>
+
+<script>
+// Demo login only. Supabase connection will be added in the next step.
+const DEMO_ADMIN = { id: "admin001", password: "admin123", name: "Admin" };
+
+const loginScreen = document.getElementById("loginScreen");
+const mainScreen = document.getElementById("mainScreen");
+const loginError = document.getElementById("loginError");
+const tabContent = document.getElementById("tabContent");
+
+document.getElementById("loginBtn").addEventListener("click", () => {
+  const id = document.getElementById("adminId").value.trim();
+  const pass = document.getElementById("adminPass").value;
+  if (id === DEMO_ADMIN.id && pass === DEMO_ADMIN.password) {
+    loginError.textContent = "";
+    document.getElementById("profName").textContent = DEMO_ADMIN.name;
+    document.getElementById("profId").textContent = DEMO_ADMIN.id;
+    loginScreen.classList.add("hidden");
+    mainScreen.classList.remove("hidden");
+  } else {
+    loginError.textContent = "ID ya password galat hai";
+  }
+});
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  mainScreen.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+  document.getElementById("adminPass").value = "";
+});
+
+document.querySelectorAll(".pill").forEach(pill => {
+  pill.addEventListener("click", () => {
+    document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+    pill.classList.add("active");
+    const name = pill.textContent;
+    tabContent.textContent = name + " section (abhi khali hai).";
+  });
+});
+
+// Sidebar
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+function openSidebar() { sidebar.classList.add("open"); overlay.classList.add("open"); }
+function closeSidebar() { sidebar.classList.remove("open"); overlay.classList.remove("open"); }
+document.getElementById("menuBtn").addEventListener("click", openSidebar);
+overlay.addEventListener("click", closeSidebar);
+document.querySelectorAll(".sidebar .item").forEach(item => {
+  item.addEventListener("click", () => {
+    if (item.id === "sideLogout") {
+      closeSidebar();
+      document.getElementById("logoutBtn").click();
+      return;
+    }
+    if (item.dataset.item === "Account Number") {
+      renderAccountForm();
+    } else {
+      tabContent.textContent = item.dataset.item + " section (abhi khali hai).";
+    }
+    closeSidebar();
+  });
+});
+
+// Account number section (demo: kept in page memory only, not saved to database yet)
+let savedAccount = null;
+function renderAccountForm() {
+  tabContent.textContent = "";
+  const title = document.createElement("p");
+  title.textContent = "Account Number (advance payment ke liye)";
+  title.style.color = "#ffffff";
+  title.style.margin = "0 0 8px";
+  tabContent.appendChild(title);
+
+  const current = document.createElement("p");
+  current.style.margin = "0 0 10px";
+  current.textContent = savedAccount ? "Abhi set hai: " + savedAccount.number + " (" + savedAccount.bank + ")" : "Abhi koi account number set nahi hai.";
+  tabContent.appendChild(current);
+
+  const bankLabel = document.createElement("label");
+  bankLabel.textContent = "Bank ka naam";
+  const bankInput = document.createElement("input");
+  bankInput.type = "text";
+  bankInput.placeholder = "Bank ka naam";
+  tabContent.appendChild(bankLabel);
+  tabContent.appendChild(bankInput);
+
+  const numLabel = document.createElement("label");
+  numLabel.textContent = "Account number";
+  const numInput = document.createElement("input");
+  numInput.type = "text";
+  numInput.placeholder = "Account number";
+  tabContent.appendChild(numLabel);
+  tabContent.appendChild(numInput);
+
+  const msg = document.createElement("div");
+  msg.className = "error";
+  tabContent.appendChild(msg);
+
+  const save = document.createElement("button");
+  save.className = "btn";
+  save.textContent = "Save";
+  save.addEventListener("click", () => {
+    const num = numInput.value.trim();
+    const bank = bankInput.value.trim();
+    if (!num || !bank) {
+      msg.textContent = "Bank aur account number dono zaroori hain";
+      return;
+    }
+    savedAccount = { number: num, bank: bank };
+    renderAccountForm();
+  });
+  tabContent.appendChild(save);
+}
+</script>
+</body>
+</html>
