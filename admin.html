@@ -33,7 +33,7 @@ input::placeholder { color: #8a96a6; }
 .small { font-size: 12px; color: #cfd8e3; }
 
 /* DARK / LIGHT MODE */
-#themeBtn { position: fixed; top: 10px; right: 10px; z-index: 20; background: #1e3a6e; color: #ffffff; border: 1px solid #c9a86a; border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+#themeBtn { position: fixed; bottom: 12px; right: 12px; z-index: 20; background: #1e3a6e; color: #ffffff; border: 1px solid #c9a86a; border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
 body.light { background: #f4f6fa; color: #111827; }
 body.light .card { background: #ffffff; color: #111827; }
 body.light .role-btn, body.light .list-item { background: #f1f4f9; color: #111827; border-color: #cbd5e1; }
@@ -594,7 +594,7 @@ async function ordersList(box, rows, actions) {
   if (!rows || rows.length === 0) { box.appendChild(h("div", "Abhi koi order nahi hai.", "small")); return; }
   rows.forEach(o => {
     const item = h("div", "", "list-item");
-    item.textContent = o.invoice + " | " + (o.shop || "-") + " | Rs " + o.total + " | " + statusLabel(o.status);
+    item.textContent = o.invoice + " | " + (o.shop || "-") + " | " + (o.pack ? o.pack + " x " + (o.bundles || 0) + " bundles | " : "") + "Rs " + o.total + " | " + statusLabel(o.status);
     if (actions) actions(item, o);
     box.appendChild(item);
   });
@@ -777,29 +777,51 @@ async function shopSection(box, label) {
 async function orderForm(box, label) {
   const shops = await rpc("app_list_shops", creds()) || [];
   const packs = (await rpc("app_list_packs", {}) || []).filter(p => p.active);
+  let chosen = packs.length ? packs[0].code : null;
+
+  box.appendChild(h("label", "Outlet"));
   const sel = h("select"); sel.id = "ordShop";
   sel.style.cssText = "width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;border:0.5px solid rgba(255,255,255,0.25);";
   shops.forEach(x => { const o = h("option", x.shop_name); o.value = x.id; sel.appendChild(o); });
-  if (shops.length === 0) sel.appendChild(h("option", "Koi approved shop nahi"));
-  box.appendChild(h("label", "Shop"));
+  if (shops.length === 0) sel.appendChild(h("option", "Abhi aapki shop approve nahi hui"));
   box.appendChild(sel);
 
-  const pk = h("select"); pk.id = "ordPack";
-  pk.style.cssText = sel.style.cssText;
-  const none = h("option", "Koi pack nahi (quantity ya amount)"); none.value = ""; pk.appendChild(none);
-  packs.forEach(p => { const o = h("option", p.code + " (Rs " + p.price + ")"); o.value = p.code; pk.appendChild(o); });
-  box.appendChild(h("label", "Pack"));
-  box.appendChild(pk);
-  box.appendChild(field("Quantity (bottles, bulk ke liye)", "ordQty", "number", "0"));
-  box.appendChild(field("Amount (Rs, sirf agar pack aur quantity nahi)", "ordTotal", "number", "0"));
+  box.appendChild(h("label", "Bundle chunein"));
+  const row = h("div"); row.style.cssText = "display:flex;gap:8px;";
+  const bundleBtns = [];
+  packs.forEach(p => {
+    const b = h("button", p.code, "btn");
+    b.type = "button"; b.style.flex = "1"; b.style.marginTop = "0";
+    b.dataset.code = p.code;
+    b.addEventListener("click", () => { chosen = p.code; paint(); calc(); });
+    bundleBtns.push(b); row.appendChild(b);
+  });
+  box.appendChild(row);
+  const paint = () => bundleBtns.forEach(b => { b.className = "btn" + (b.dataset.code === chosen ? "" : " ghost"); });
+
+  box.appendChild(field("Bundles ki tadaad (1 ya zyada)", "ordBundles", "number", "1"));
+  $("ordBundles").value = "1";
+  const priceLine = h("div", "", "list-item");
+  box.appendChild(priceLine);
+  const calc = () => {
+    const p = packs.find(x => x.code === chosen);
+    const n = Math.max(0, Math.floor(Number($("ordBundles").value) || 0));
+    if (!p) { priceLine.textContent = "Bundle chunein"; return; }
+    priceLine.textContent = chosen + " | Rs " + p.price + " per bundle | " + n + " bundles = Rs " + (n * p.price);
+  };
+  $("ordBundles").addEventListener("input", calc);
+  paint(); calc();
+
   const m = note(box, "");
   box.appendChild(button("Order bhejein", async () => {
+    const n = Math.floor(Number($("ordBundles").value) || 0);
+    if (!chosen) { m.textContent = "Pehle bundle chunein"; m.className = "msg"; return; }
+    if (n < 1) { m.textContent = "Bundles 1 ya zyada hon"; m.className = "msg"; return; }
+    if (!sel.value) { m.textContent = "Outlet chunein"; m.className = "msg"; return; }
     const invoice = "INV-" + Date.now();
-    const qty = Number($("ordQty").value) || null;
-    const manual = Number($("ordTotal").value) || null;
-    const res = await rpc("app_create_order_v2", { ...creds(), p_shop: sel.value, p_invoice: invoice, p_pack: pk.value || null, p_qty: qty, p_manual_total: manual });
+    const res = await rpc("app_create_bundle_order", { ...creds(), p_shop: sel.value, p_invoice: invoice, p_pack: chosen, p_bundles: n });
     if (!res || !res.ok) { m.textContent = (res && res.error) || "Order nahi hua"; m.className = "msg"; return; }
-    m.textContent = "Order ho gaya: " + invoice + " | Total Rs " + res.total;
+    m.textContent = "Order ho gaya: " + invoice + " | " + chosen + " x " + n + " bundles | Rs " + res.total;
     m.className = "msg ok";
   }));
 }
@@ -1032,7 +1054,7 @@ async function shopForm(box, label) {
 
 function openHome() {
   $("homeName").textContent = currentUser.name;
-  $("homeId").textContent = "ID: " + currentUser.key;
+  $("homeId").textContent = (currentRole === "shopkeeper" ? "Phone: " : "ID: ") + currentUser.key;
   $("homeDes").textContent = "Designation: " + currentUser.des;
   const side = $("sideItems");
   side.textContent = "";
