@@ -152,9 +152,7 @@ body.light .sidebar { background: #ffffff; color: #111827; }
         <label>Shop ka naam</label><input id="rgShop">
         <label>Shop ka phone</label><input id="rgShopPhone" type="tel">
         <label>Shop ka mukammal address</label><input id="rgAddr">
-        <label>Latitude</label><input id="rgLat" type="number" step="any">
-        <label>Longitude</label><input id="rgLng" type="number" step="any">
-        <label>Shop ki image (file ka naam)</label><input id="rgImg">
+        <div id="rgLiveBox"></div>
         <label>PIN / Password (kam az kam 6)</label><input id="rgPass" type="password">
         <button class="shop-btn" id="rgSubmit">Register karein</button>
         <div class="msg" id="rgMsg"></div>
@@ -519,6 +517,60 @@ async function reportCenter(box, label) {
   };
   $("repSearch").addEventListener("input", draw);
   draw();
+}
+
+// LIVE LOCATION AND CAMERA IMAGE (used by shop registration)
+function attachLiveLocAndImage(box, ids) {
+  const hLat = h("input"); hLat.type = "hidden"; hLat.id = ids.lat;
+  const hLng = h("input"); hLng.type = "hidden"; hLng.id = ids.lng;
+  const hImg = h("input"); hImg.type = "hidden"; hImg.id = ids.img;
+  box.appendChild(hLat); box.appendChild(hLng); box.appendChild(hImg);
+
+  box.appendChild(h("label", "Location (live)"));
+  const locMsg = h("div", "Location abhi nahi li gayi", "small");
+  box.appendChild(locMsg);
+  box.appendChild(button("Live location lein", () => {
+    if (!navigator.geolocation) { locMsg.textContent = "Is phone mein location support nahi"; return; }
+    locMsg.textContent = "Location le rahe hain...";
+    navigator.geolocation.getCurrentPosition(p => {
+      hLat.value = p.coords.latitude.toFixed(6);
+      hLng.value = p.coords.longitude.toFixed(6);
+      locMsg.textContent = "Location mil gayi: " + hLat.value + ", " + hLng.value;
+      locMsg.className = "msg ok";
+    }, () => {
+      locMsg.textContent = "Location nahi mili. Phone ki location on karke permission dein.";
+      locMsg.className = "msg";
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  }, true));
+
+  box.appendChild(h("label", "Shop ki image (camera se)"));
+  const file = h("input"); file.type = "file"; file.accept = "image/*"; file.setAttribute("capture", "environment");
+  box.appendChild(file);
+  const imgPreview = h("img"); imgPreview.style.cssText = "display:none;width:100%;border-radius:10px;margin-top:8px;";
+  box.appendChild(imgPreview);
+  const imgMsg = h("div", "Photo abhi nahi li gayi", "small");
+  box.appendChild(imgMsg);
+  file.addEventListener("change", () => {
+    const f = file.files && file.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const max = 800, scale = Math.min(1, max / Math.max(im.width, im.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(im.width * scale); c.height = Math.round(im.height * scale);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+        const data = c.toDataURL("image/jpeg", 0.7);
+        hImg.value = data;
+        imgPreview.src = data; imgPreview.style.display = "block";
+        imgMsg.textContent = "Photo le li gayi"; imgMsg.className = "msg ok";
+      };
+      im.src = reader.result;
+    };
+    reader.readAsDataURL(f);
+  });
+  return { lat: hLat, lng: hLng, img: hImg };
 }
 
 // ---------- sections ----------
@@ -965,10 +1017,13 @@ async function assignSection(box, label) {
 }
 
 async function shopForm(box, label) {
-  const fields = [["Shopkeeper ka naam", "rName"], ["Shop ka naam", "rShop"], ["Shop ka phone", "rPhone"], ["Shop ka mukammal address", "rAddr"], ["Latitude", "rLat", "number"], ["Longitude", "rLng", "number"], ["Shop ki image (file ka naam)", "rImg"]];
+  const fields = [["Shopkeeper ka naam", "rName"], ["Shop ka naam", "rShop"], ["Shop ka phone", "rPhone"], ["Shop ka mukammal address", "rAddr"]];
   fields.forEach(f => box.appendChild(field(f[0], f[1], f[2])));
+  attachLiveLocAndImage(box, { lat: "rLat", lng: "rLng", img: "rImg" });
   const m = note(box, "");
   box.appendChild(button("Shop register karein", async () => {
+    if (!$("rLat").value || !$("rLng").value) { m.textContent = "Pehle live location lein"; m.className = "msg"; return; }
+    if (!$("rImg").value) { m.textContent = "Pehle shop ki photo camera se lein"; m.className = "msg"; return; }
     const ok = await rpc("app_register_shop", { ...creds(), p_shopkeeper_name: $("rName").value, p_shop_name: $("rShop").value, p_shop_phone: $("rPhone").value, p_address: $("rAddr").value, p_lat: Number($("rLat").value), p_lng: Number($("rLng").value), p_image: $("rImg").value });
     m.textContent = ok ? "Shop register ho gayi. Admin approval ke baad active hogi." : "Shop register nahi hui, sab fields bharein";
     m.className = ok ? "msg ok" : "msg";
@@ -1071,9 +1126,11 @@ function openShopLogin() {
   show("screenShop");
 }
 function openShopReg(phone) {
+  if (!$("rgLiveBox").dataset.ready) { attachLiveLocAndImage($("rgLiveBox"), { lat: "rgLat", lng: "rgLng", img: "rgImg" }); $("rgLiveBox").dataset.ready = "1"; }
   $("regPhoneShow").textContent = "Phone: " + phone;
   $("rgShopPhone").value = phone;
-  ["rgName","rgShop","rgAddr","rgLat","rgLng","rgImg","rgPass"].forEach(id => $(id).value = "");
+  ["rgName","rgShop","rgAddr","rgPass"].forEach(id => $(id).value = "");
+  ["rgLat","rgLng","rgImg"].forEach(id => { if ($(id)) $(id).value = ""; });
   setMsg($("rgMsg"), "");
   show("screenShopReg");
 }
@@ -1113,6 +1170,8 @@ $("rgBack").addEventListener("click", () => openShopLogin());
 $("rgSubmit").addEventListener("click", async () => {
   const phone = normPhone($("rgShopPhone").value) || normPhone($("regPhoneShow").textContent.replace("Phone: ", ""));
   const pass = $("rgPass").value;
+  if (!$("rgLat").value || !$("rgLng").value) { setMsg($("rgMsg"), "Pehle live location lein"); return; }
+  if (!$("rgImg").value) { setMsg($("rgMsg"), "Pehle shop ki photo camera se lein"); return; }
   if (pass.length < 6) { setMsg($("rgMsg"), "Password kam az kam 6 characters ka ho"); return; }
   try {
     const res = await rpc("app_self_register", {
