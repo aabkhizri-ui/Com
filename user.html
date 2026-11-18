@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aab-e-Khizri USER</title>
+<style>
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; font-family: system-ui, sans-serif; background: #111827; color: #ffffff; }
+.wrap { max-width: 400px; margin: 0 auto; padding: 16px; }
+.hidden { display: none !important; }
+.card { background: #1f2a3a; border: 1.5px solid #c9a86a; border-radius: 14px; padding: 18px; margin-top: 14px; }
+.logo { width: 90px; height: 90px; border-radius: 50%; object-fit: contain; background: #ffffff; display: block; margin: 8px auto 12px; }
+h1 { font-size: 17px; font-weight: 500; text-align: center; margin: 0 0 14px; letter-spacing: 1px; }
+label { display: block; font-size: 12px; color: #cfd8e3; margin: 10px 0 4px; }
+input { width: 100%; background: rgba(255,255,255,0.08); border: 0.5px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 10px 12px; color: #ffffff; font-size: 14px; outline: none; }
+input::placeholder { color: #8a96a6; }
+.btn { width: 100%; background: #1e3a6e; color: #ffffff; border: 1px solid #c9a86a; border-radius: 999px; padding: 11px; font-size: 14px; font-weight: 500; margin-top: 14px; cursor: pointer; }
+.btn.ghost { background: transparent; }
+.link { color: #e8d7b0; font-size: 12px; text-align: center; margin-top: 12px; cursor: pointer; text-decoration: underline; display: block; }
+.msg { font-size: 12px; text-align: center; margin-top: 10px; min-height: 16px; color: #f8a5a5; }
+.msg.ok { color: #9be7a6; }
+.role-btn { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 14px; margin-top: 10px; cursor: pointer; font-size: 14px; }
+.role-tag { font-size: 11px; padding: 4px 10px; border-radius: 999px; color: #ffffff; }
+.topbar { background: #1e3a6e; border: 1.5px solid #c9a86a; border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+.topbar .who { font-size: 14px; font-weight: 500; }
+.topbar .des { font-size: 11px; color: #e8d7b0; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pill { background: #1e3a6e; color: #ffffff; border: 1px solid #c9a86a; border-radius: 999px; padding: 8px 12px; font-size: 12px; cursor: pointer; }
+.pill.active { background: #c9a86a; color: #111827; }
+.list-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 13px; color: #cfd8e3; }
+.small { font-size: 12px; color: #cfd8e3; }
+
+/* DARK / LIGHT MODE */
+#themeBtn { position: fixed; top: 10px; right: 10px; z-index: 20; background: #1e3a6e; color: #ffffff; border: 1px solid #c9a86a; border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+body.light { background: #f4f6fa; color: #111827; }
+body.light .card { background: #ffffff; color: #111827; }
+body.light .role-btn, body.light .list-item { background: #f1f4f9; color: #111827; border-color: #cbd5e1; }
+body.light input { background: #ffffff; color: #111827; border-color: #94a3b8; }
+body.light input::placeholder { color: #6b7280; }
+body.light label, body.light .small { color: #374151; }
+body.light .link { color: #7a5a1f; }
+body.light .btn.ghost { color: #111827; border-color: #94a3b8; }
+body.light .logo { background: #ffffff; }
+body.light .msg { color: #b91c1c; }
+body.light .msg.ok { color: #15803d; }
+
+/* SIDE DRAWER */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; z-index: 10; }
+.overlay.open { display: block; }
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 290px; max-width: 86%; background: #1f2a3a; border-right: 1.5px solid #c9a86a; transform: translateX(-100%); transition: transform 0.25s ease; z-index: 11; overflow-y: auto; padding: 18px 14px; padding-top: calc(18px + env(safe-area-inset-top, 0px)); }
+.sidebar.open { transform: translateX(0); }
+.sidebar .list-item { cursor: pointer; margin-top: 6px; }
+body.light .sidebar { background: #ffffff; color: #111827; }
+
+/* SHOPKEEPER LOGIN */
+.shop-wrap { max-width: 400px; margin: 0 auto; padding: 18px 16px; text-align: center; }
+.shop-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: contain; background: #ffffff; display: block; margin: 8px auto 14px; }
+.shop-tabs { display: flex; background: #e5e7eb; border-radius: 14px; padding: 6px; margin-bottom: 14px; }
+.shop-tab { flex: 1; background: linear-gradient(90deg, #4338ca, #7c3aed); color: #ffffff; border-radius: 12px; padding: 10px; font-weight: 600; }
+.shop-card { background: #e5e7eb; color: #111827; border-radius: 18px; padding: 22px 18px; text-align: left; }
+.shop-card h2 { text-align: center; font-size: 26px; margin: 0 0 6px; }
+.shop-sub { text-align: center; color: #4b5563; font-size: 14px; margin: 0 0 16px; }
+.shop-card label { color: #374151; font-size: 14px; display: block; margin: 12px 0 6px; }
+.shop-card input { background: #ffffff; color: #111827; border: none; border-radius: 12px; padding: 12px; width: 100%; font-size: 15px; }
+.phone-row { display: flex; align-items: center; background: #ffffff; border-radius: 12px; padding: 0 12px; }
+.phone-row input { border-radius: 0; padding-left: 8px; }
+.prefix { color: #4338ca; font-weight: 600; font-size: 15px; }
+.chk { display: flex; align-items: center; gap: 8px; }
+.chk input { width: auto; }
+.shop-btn { width: 100%; background: #db2777; color: #ffffff; border: none; border-radius: 14px; padding: 14px; font-size: 16px; margin-top: 16px; cursor: pointer; }
+.shop-reg { color: #e5e7eb; font-size: 14px; margin-top: 18px; }
+.shop-reg a { color: #818cf8; cursor: pointer; text-decoration: underline; }
+
+.code-row { display: flex; align-items: center; gap: 8px; }
+.code-row input { flex: 1; min-width: 0; }
+.captcha { background: #f3f4f6; border: 2px solid #374151; border-radius: 6px; padding: 6px 10px; font-size: 20px; font-weight: 700; letter-spacing: 3px; display: inline-block; color: #111827; font-family: monospace; user-select: none; }
+.captcha-refresh { background: none; border: none; color: #4a7c59; font-size: 24px; cursor: pointer; padding: 0 4px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<button id="themeBtn">Light</button>
+<div class="wrap">
+
+  <!-- ROLE SELECT -->
+  <section id="screenRoles">
+    <div class="card">
+      <img class="logo" src="logo.png" alt="Aab-e-Khizri logo">
+      <h1>SELECT YOUR ROLE</h1>
+      <div class="role-btn" data-role="admin"><span>ADMIN (ایڈمن)</span><span class="role-tag" style="background:#1e3a6e">Login</span></div>
+      <div class="role-btn" data-role="user"><span>USER (صارف)</span><span class="role-tag" style="background:#5b3a8c">Login</span></div>
+      <div class="role-btn" data-role="employer"><span>EMPLOYER (آجر)</span><span class="role-tag" style="background:#2e6b3e">Login</span></div>
+      <div class="role-btn" data-role="order_booker"><span>ORDER BOOKER (آرڈر بک)</span><span class="role-tag" style="background:#b3261e">Login</span></div>
+      <div class="role-btn" data-role="shopkeeper"><span>SHOPKEEPER (دکاندار)</span><span class="role-tag" style="background:#b3261e">Login</span></div>
+    </div>
+  </section>
+
+  <!-- LOGIN -->
+  <section id="screenLogin" class="hidden">
+    <div class="card">
+      <div id="roleLetter" style="text-align:center; font-size:22px; font-weight:500; color:#e8d7b0; min-height:28px; letter-spacing:2px;"></div>
+      <img class="logo" src="logo.png" alt="Aab-e-Khizri logo">
+      <h1 id="loginTitle">LOGIN</h1>
+      <label id="idLabel" for="loginId">ID</label>
+      <input id="loginId" type="text" placeholder="ID">
+      <label for="loginPass">Password</label>
+      <input id="loginPass" type="password" placeholder="Password">
+      <button class="btn" id="loginBtn">Login</button>
+      <a class="link" id="forgotLink">Forgot Password?</a>
+      <a class="link" id="backRoles1">Wapas role selection par jayein</a>
+      <div class="msg" id="loginMsg"></div>
+    </div>
+  </section>
+
+  <!-- SHOPKEEPER LOGIN (phone +92) -->
+  <section id="screenShop" class="hidden">
+    <div class="shop-wrap">
+      <img class="shop-logo" src="logo.png" alt="Aab-e-Khizri logo">
+      <div class="shop-tabs"><div class="shop-tab active">Phone No</div></div>
+      <div class="shop-card">
+        <h2>Welcome Back</h2>
+        <p class="shop-sub">Apne registered phone number se sign in karein</p>
+        <label>Phone Number</label>
+        <div class="phone-row"><span class="prefix">+92</span><input id="shopPhone" type="tel" inputmode="numeric" placeholder="3XXXXXXXXX"></div>
+        <label>PIN / Password</label>
+        <input id="shopPin" type="password" placeholder="PIN / Password">
+        <label>Enter Code</label>
+        <div class="code-row">
+          <input id="shopCode" type="text" inputmode="numeric" placeholder="Code No.">
+          <div class="captcha" id="shopCaptcha">10050</div>
+          <button class="captcha-refresh" id="shopCaptchaRefresh" type="button" aria-label="Naya code">&#8635;</button>
+        </div>
+        <label class="chk"><input type="checkbox" id="shopRemember" checked> Remember me</label>
+        <button class="shop-btn" id="shopSignIn">Sign In</button>
+        <div class="msg" id="shopMsg"></div>
+      </div>
+      <p class="shop-reg">Account nahi hai? <a id="shopToReg">Register</a></p>
+      <a class="link" id="shopBack">Wapas role selection par jayein</a>
+    </div>
+  </section>
+
+  <!-- SHOPKEEPER REGISTRATION -->
+  <section id="screenShopReg" class="hidden">
+    <div class="shop-wrap">
+      <img class="shop-logo" src="logo.png" alt="Aab-e-Khizri logo">
+      <div class="shop-card">
+        <h2>Register</h2>
+        <p class="shop-sub" id="regPhoneShow"></p>
+        <label>Shopkeeper ka naam</label><input id="rgName">
+        <label>Shop ka naam</label><input id="rgShop">
+        <label>Shop ka phone</label><input id="rgShopPhone" type="tel">
+        <label>Shop ka mukammal address</label><input id="rgAddr">
+        <label>Latitude</label><input id="rgLat" type="number" step="any">
+        <label>Longitude</label><input id="rgLng" type="number" step="any">
+        <label>Shop ki image (file ka naam)</label><input id="rgImg">
+        <label>PIN / Password (kam az kam 6)</label><input id="rgPass" type="password">
+        <button class="shop-btn" id="rgSubmit">Register karein</button>
+        <div class="msg" id="rgMsg"></div>
+      </div>
+      <a class="link" id="rgBack">Login par wapas</a>
+    </div>
+  </section>
+
+  <!-- FORGOT PASSWORD -->
+  <section id="screenForgot" class="hidden">
+    <div class="card">
+      <h1>FORGOT PASSWORD</h1>
+      <label id="forgotIdLabel" for="forgotId">ID</label>
+      <input id="forgotId" type="text" placeholder="ID">
+      <label>Naya password</label>
+      <input id="forgotNew" type="password" placeholder="Naya password">
+      <button class="btn" id="forgotBtn">Password reset karein</button>
+      <a class="link" id="backLogin1">Login par wapas</a>
+      <div class="msg" id="forgotMsg"></div>
+    </div>
+  </section>
+
+  <!-- HOME (after login) -->
+  <section id="screenHome" class="hidden">
+    <div class="topbar" style="flex-direction:column; align-items:center; gap:6px; padding:16px 14px;">
+      <img src="logo.png" alt="Aab-e-Khizri logo" style="width:96px; height:96px; border-radius:50%; background:#ffffff; object-fit:contain;">
+      <div class="who" id="homeName">Name</div>
+      <div class="des" id="homeId">ID</div>
+      <div class="des" id="homeDes">Designation</div>
+      <button class="btn ghost" id="homeMenuBtn" style="width:auto; margin:8px 0 0; padding:8px 20px;">&#9776; Menu</button>
+    </div>
+    <div class="card" id="homeContent"></div>
+  </section>
+  <div class="overlay" id="overlay"></div>
+  <aside class="sidebar" id="sidebar" aria-label="Menu"><div id="sideItems"></div></aside>
+
+  <!-- CHANGE PASSWORD -->
+  <section id="screenChange" class="hidden">
+    <div class="card">
+      <h1>PASSWORD BADLEIN</h1>
+      <label for="oldPass">Purana password</label>
+      <input id="oldPass" type="password">
+      <label for="newPass">Naya password</label>
+      <input id="newPass" type="password">
+      <button class="btn" id="changeBtn">Save</button>
+      <a class="link" id="backHome">Wapas</a>
+      <div class="msg" id="changeMsg"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+
+const PILLS = {
+  admin: ["Approval", "Registration", "Dispatch", "Review", "Sales", "Discounts aur Promos", "Packs aur Bulk Rate", "Tokens (Noor Coins)", "Khizr Rewards", "Users aur IDs", "Outlet Assign", "Report Center", "Products", "Account Number", "Reports"],
+  user: ["Shopkeeper Orders", "Outlets", "Dispatch Status", "My Orders", "Employer aur Booker IDs", "Outlets", "Report Center"],
+  employer: ["Shopkeeper Orders", "Dispatch", "Printing", "Shipping Status", "Report Center"],
+  order_booker: ["Sync aur Configure", "Outlets", "Order Place", "Record Sales", "Attendance", "KPIs", "Shop Register", "Tokens"],
+  shopkeeper: ["Order", "My Orders", "Tokens", "Shop Register", "Products"]
+};
+
+const ROLE_LABEL = { admin: "Admin", user: "User", employer: "Employer", order_booker: "Order Booker", shopkeeper: "Shopkeeper" };
+
+let currentRole = null;
+let currentUser = null;
+
+const $ = id => document.getElementById(id);
+function show(id) {
+  ["screenRoles","screenLogin","screenForgot","screenHome","screenChange","screenShop","screenShopReg"].forEach(s => $(s).classList.add("hidden"));
+  $(id).classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+function setMsg(el, text, ok) { el.textContent = text; el.className = "msg" + (ok ? " ok" : ""); }
+
+// ROLE SELECT
+document.querySelectorAll(".role-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentRole = btn.dataset.role;
+    const isShop = currentRole === "shopkeeper";
+    $("loginTitle").textContent = ROLE_LABEL[currentRole].toUpperCase() + " LOGIN";
+    const LETTERS = { admin: "A", user: "U", employer: "E", order_booker: "", shopkeeper: "" };
+    $("roleLetter").textContent = LETTERS[currentRole];
+    $("idLabel").textContent = isShop ? "Mobile number" : "ID";
+    $("loginId").placeholder = isShop ? "Mobile number" : "ID";
+    $("forgotIdLabel").textContent = isShop ? "Mobile number" : "ID";
+    $("loginId").value = "";
+    $("loginPass").value = "";
+    setMsg($("loginMsg"), "");
+    if (currentRole === "shopkeeper") { openShopLogin(); return; }
+    show("screenLogin");
+  });
+});
+
+$("backRoles1").addEventListener("click", () => backToStart());
+$("forgotLink").addEventListener("click", () => { $("forgotId").value = ""; $("forgotNew").value = ""; setMsg($("forgotMsg"), ""); show("screenForgot"); });
+$("backLogin1").addEventListener("click", () => show("screenLogin"));
+
+// SUPABASE CONNECTION (publishable key is safe to be public)
+const SB_URL = "https://ddccndpknwjxppylrjkm.supabase.co";
+const SB_KEY = "sb_publishable_f59FQL-7C0YvS0bQ6MvyUQ_VZjH26q4";
+async function rpc(name, body) {
+  const r = await fetch(SB_URL + "/rest/v1/rpc/" + name, {
+    method: "POST",
+    headers: { "apikey": SB_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error(name + " (" + r.status + "): " + txt.slice(0, 200));
+  }
+  return r.json();
+}
+
+// LOGIN (real database)
+$("loginBtn").addEventListener("click", async () => {
+  const id = $("loginId").value.trim();
+  const pass = $("loginPass").value;
+  if (!id || !pass) { setMsg($("loginMsg"), "ID aur password dono bharein"); return; }
+  setMsg($("loginMsg"), "Check ho raha hai...", true);
+  try {
+    const user = await rpc("app_login", { p_id: id, p_pass: pass });
+    if (!user || user.role !== currentRole) { setMsg($("loginMsg"), "ID ya password galat hai"); return; }
+    currentUser = { key: user.login_id, name: user.name, des: user.designation, pass: pass, role: user.role };
+    setMsg($("loginMsg"), "");
+    openHome();
+  } catch (e) {
+    setMsg($("loginMsg"), "Error: " + (e && e.message ? e.message : e));
+  }
+});
+
+// FORGOT PASSWORD: request goes to admin approval (no SMS)
+$("forgotBtn").addEventListener("click", async () => {
+  const id = $("forgotId").value.trim();
+  const np = $("forgotNew").value;
+  if (!id || !np) { setMsg($("forgotMsg"), "ID aur naya password dono bharein"); return; }
+  try {
+    const ok = await rpc("app_request_reset", { p_id: id, p_new: np });
+    if (ok) setMsg($("forgotMsg"), "Request admin ko bhej di gayi hai. Approval ke baad login karein.", true);
+    else setMsg($("forgotMsg"), "ID nahi mili, ya password 6 characters se chhota hai");
+  } catch (e) {
+    setMsg($("forgotMsg"), "Connection mein masla hai, dobara koshish karein");
+  }
+});
+
+// HOME
+function sideItem(label, fn) {
+  const d = document.createElement("div");
+  d.className = "list-item";
+  d.textContent = label;
+  d.addEventListener("click", fn);
+  return d;
+}
+function openSide() { $("sidebar").classList.add("open"); $("overlay").classList.add("open"); }
+function closeSide() { $("sidebar").classList.remove("open"); $("overlay").classList.remove("open"); }
+
+// ---------- helpers ----------
+function h(tag, text, cls) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; }
+function field(label, id, type, placeholder) {
+  const wrap = document.createElement("div");
+  wrap.appendChild(h("label", label));
+  const i = h("input"); i.id = id; i.type = type || "text"; i.placeholder = placeholder || label;
+  wrap.appendChild(i);
+  return wrap;
+}
+function button(text, fn, ghost) { const b = h("button", text, "btn" + (ghost ? " ghost" : "")); b.addEventListener("click", fn); return b; }
+function note(box, text, ok) { const m = h("div", text, ok ? "msg ok" : "msg"); box.appendChild(m); return m; }
+function creds() { return { p_id: currentUser.key, p_pass: currentUser.pass }; }
+function statusLabel(s) {
+  return { pending_approval: "Approval ka intezaar", approved: "Approved", dispatched: "Dispatch ho gaya", shipping: "Shipping", delivered: "Delivered", cancelled: "Cancelled", payment_pending: "Payment pending" }[s] || s;
+}
+
+async function accountSection(box, label, roles) {
+  box.appendChild(h("p", "Naya ID banayein", "small"));
+  const roleSel = h("select");
+  roleSel.style.cssText = "width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;border:0.5px solid rgba(255,255,255,0.25);";
+  const names = { user: "User", shopkeeper: "Shopkeeper", employer: "Employer", order_booker: "Order Booker" };
+  roles.forEach(r => { const o = h("option", names[r]); o.value = r; roleSel.appendChild(o); });
+  box.appendChild(h("label", "Role"));
+  box.appendChild(roleSel);
+  box.appendChild(field("Naam", "accName"));
+  box.appendChild(field(roleSel.value === "shopkeeper" ? "Mobile number" : "ID", "accLogin"));
+  box.appendChild(field("Password (kam az kam 6 characters)", "accPass", "password"));
+  const m = note(box, "");
+  box.appendChild(button("ID banayein", async () => {
+    const res = await rpc("app_create_account", { ...creds(), p_role: roleSel.value, p_login: $("accLogin").value.trim(), p_name: $("accName").value.trim(), p_password: $("accPass").value });
+    const msgs = { exists: "Ye ID pehle se hai", short: "ID ya password chhota hai", "not allowed": "Aapko ye role banane ki ijazat nahi", login: "Login mein masla" };
+    m.textContent = res && res.ok ? "ID ban gayi" : (msgs[res && res.error] || "ID nahi bani");
+    m.className = res && res.ok ? "msg ok" : "msg";
+    if (res && res.ok) renderSection(label);
+  }));
+
+  box.appendChild(h("p", "Mojooda IDs", "small"));
+  const list = await rpc("app_list_accounts", creds()) || [];
+  if (list.length === 0) box.appendChild(h("div", "Abhi koi ID nahi.", "small"));
+  list.forEach(a => {
+    const item = h("div", names[a.role] + " | " + a.login_id + " | " + a.name + (a.active ? "" : " (band)"), "list-item");
+    item.appendChild(button(a.active ? "Band karein" : "Chalu karein", async () => {
+      await rpc("app_set_active", { ...creds(), p_login: a.login_id, p_active: !a.active });
+      renderSection(label);
+    }, true));
+    box.appendChild(item);
+  });
+}
+
+async function promoDiscountSection(box, label) {
+  box.appendChild(h("p", "Promo aur Offer", "small"));
+  const promos = await rpc("app_list_promos", {}) || [];
+  if (promos.length === 0) box.appendChild(h("div", "Abhi koi promo nahi.", "small"));
+  promos.forEach(p => {
+    const item = h("div", p.title + (p.active ? " (chalu)" : " (band)"), "list-item");
+    item.appendChild(button(p.active ? "Band karein" : "Chalu karein", async () => {
+      await rpc("app_set_promo", { ...creds(), p_promo: p.id, p_active: !p.active }); renderSection(label);
+    }, true));
+    box.appendChild(item);
+  });
+  box.appendChild(field("Naya promo ka naam", "promoTitle"));
+  const pm = note(box, "");
+  box.appendChild(button("Promo add karein", async () => {
+    const t = $("promoTitle").value.trim();
+    if (!t) { pm.textContent = "Naam likhein"; return; }
+    await rpc("app_add_promo", { ...creds(), p_title: t }); renderSection(label);
+  }));
+
+  box.appendChild(h("p", "Special customer discount", "small"));
+  const discounts = await rpc("app_list_discounts", creds()) || [];
+  discounts.forEach(d => {
+    const item = h("div", d.shop + " | " + d.percent + "%" + (d.active ? "" : " (band)"), "list-item");
+    item.appendChild(button(d.active ? "Band karein" : "Chalu karein", async () => {
+      await rpc("app_set_discount", { ...creds(), p_shop: d.shop_id, p_percent: d.percent, p_active: !d.active }); renderSection(label);
+    }, true));
+    box.appendChild(item);
+  });
+  const shops = await rpc("app_list_shops", creds()) || [];
+  const sel = h("select"); sel.id = "discShop";
+  sel.style.cssText = "width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;border:0.5px solid rgba(255,255,255,0.25);";
+  shops.forEach(x => { const o = h("option", x.shop_name); o.value = x.id; sel.appendChild(o); });
+  box.appendChild(h("label", "Shop"));
+  box.appendChild(sel);
+  box.appendChild(field("Discount percent (%)", "discPct", "number", "0"));
+  const dm = note(box, "");
+  box.appendChild(button("Discount save karein", async () => {
+    const pct = Number($("discPct").value);
+    if (!sel.value || pct < 0 || pct > 100) { dm.textContent = "Shop aur 0 se 100 ke beech percent"; return; }
+    await rpc("app_set_discount", { ...creds(), p_shop: sel.value, p_percent: pct, p_active: true }); renderSection(label);
+  }));
+}
+
+async function packsBulkSection(box, label) {
+  box.appendChild(h("p", "Packs (6+2 aur 12+4)", "small"));
+  const packs = await rpc("app_list_packs", {}) || [];
+  packs.forEach(p => {
+    const row = h("div", "", "list-item");
+    row.textContent = p.code + " | " + p.paid + " paid + " + p.free + " free | Rs " + p.price + " | Tokens " + p.tokens + (p.active ? "" : " (band)");
+    box.appendChild(row);
+    const price = field("Price (Rs)", "pPrice" + p.code.replace("+", "_"), "number", String(p.price));
+    const tok = field("Tokens (Noor Coins)", "pTok" + p.code.replace("+", "_"), "number", String(p.tokens));
+    box.appendChild(price); box.appendChild(tok);
+    box.appendChild(button("Pack save karein", async () => {
+      const key = p.code.replace("+", "_");
+      await rpc("app_set_pack", { ...creds(), p_code: p.code, p_price: Number($("pPrice" + key).value), p_tokens: Number($("pTok" + key).value), p_active: p.active });
+      renderSection(label);
+    }));
+  });
+  box.appendChild(h("p", "Bulk rate (quantity par)", "small"));
+  const bulk = await rpc("app_list_bulk", {}) || [];
+  if (bulk.length === 0) box.appendChild(h("div", "Abhi koi bulk rate nahi.", "small"));
+  bulk.forEach(b => {
+    const item = h("div", b.min + " bottles ya zyada: Rs " + b.price + " per bottle" + (b.active ? "" : " (band)"), "list-item");
+    item.appendChild(button(b.active ? "Band karein" : "Chalu karein", async () => {
+      await rpc("app_save_bulk", { ...creds(), p_bulk: b.id, p_min: b.min, p_price: b.price, p_active: !b.active }); renderSection(label);
+    }, true));
+    box.appendChild(item);
+  });
+  box.appendChild(field("Minimum bottles", "bMin", "number"));
+  box.appendChild(field("Rate per bottle (Rs)", "bPrice", "number"));
+  const bm = note(box, "");
+  box.appendChild(button("Bulk rate add karein", async () => {
+    const r = await rpc("app_save_bulk", { ...creds(), p_bulk: null, p_min: Number($("bMin").value), p_price: Number($("bPrice").value), p_active: true });
+    bm.textContent = r ? "Bulk rate add ho gaya" : "Ye add nahi hua"; renderSection(label);
+  }));
+}
+const REPORTS = [{"name": "Sales / Package and Outlet"}, {"name": "Sales / Package and Outlet (Discounted and Non-Discounted)"}, {"name": "Order based Sales Summary"}, {"name": "Stock Summary"}, {"name": "Order Booker / Outlet Activity"}, {"name": "Backorder Summary"}, {"name": "Lifting / Package and Distributor"}, {"name": "Order Booker Tracking"}, {"name": "Timestamp Analysis"}, {"name": "PJP List"}, {"name": "Unproductive Outlets"}, {"name": "Distributor Ledger"}, {"name": "Outlet Sales"}, {"name": "Lifting vs. Secondary"}, {"name": "Order Booker Tracking (Secondary User)"}, {"name": "PJP List (Secondary User)"}, {"name": "Lifting Orders (Secondary User)"}, {"name": "Order Booker Sales (Secondary User)"}, {"name": "Secondary Sales Verification"}, {"name": "Order Summary"}, {"name": "Outlet Sales (Dashboard)"}, {"name": "PJP List (Hierarchy)"}, {"name": "Retailer Discounts"}, {"name": "Sales Return Report"}, {"name": "Order Analysis Discounted Outlets"}, {"name": "Sales Return Posting"}, {"name": "Pack Wise Order Summary"}, {"name": "PSR Attendance (Detail)"}, {"name": "Lifting / Distributor and Order (Secondary User)"}, {"name": "PSR Targets vs Attainment"}, {"name": "Market Visit Tracking"}, {"name": "Order Booker / Outlet Activity (Secondary User)"}, {"name": "PSR Attendance (Secondary User)"}, {"name": "Market Visit Summary (Detail)"}, {"name": "Attendance Report"}, {"name": "Dispatch Summary"}, {"name": "WEC Route Coverage"}, {"name": "WEC Work With"}, {"name": "WEC Planned"}, {"name": "Back Order Report"}, {"name": "Distributor Wise"}, {"name": "Competition Evaluation"}, {"name": "Outlet List"}, {"name": "Order Booking"}, {"name": "Order Invoicing"}, {"name": "Order Cancelling"}];
+
+const REPORT_VIEWS = {
+  "Order Summary": async (box) => {
+    const rows = await rpc("app_list_orders", creds()) || [];
+    const by = {};
+    rows.forEach(r => { by[r.status] = (by[r.status] || 0) + 1; });
+    Object.keys(by).forEach(k => box.appendChild(h("div", statusLabel(k) + ": " + by[k], "list-item")));
+    if (rows.length === 0) box.appendChild(h("div", "Abhi koi order nahi.", "small"));
+  },
+  "Order Booking": async (box) => { await ordersList(box, await rpc("app_list_orders", creds()) || []); },
+  "Order Invoicing": async (box) => {
+    const rows = (await rpc("app_list_orders", creds()) || []).filter(o => ["approved","dispatched","shipping","delivered"].includes(o.status));
+    await ordersList(box, rows);
+  },
+  "Order Cancelling": async (box) => { await ordersList(box, (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "cancelled")); },
+  "Outlet List": async (box) => {
+    const shops = await rpc("app_list_shops", creds()) || [];
+    if (shops.length === 0) box.appendChild(h("div", "Koi approved outlet nahi.", "small"));
+    shops.forEach(x => box.appendChild(h("div", x.shop_name, "list-item")));
+  },
+  "Outlet Sales": async (box) => { await ordersList(box, await rpc("app_list_orders", creds()) || []); }
+};
+
+const EXCEL_FILES = [
+  ["shops", "Shop Registration"], ["claims", "Token Claims"], ["orders", "Orders"], ["cancelled", "Cancelled Orders"],
+  ["outlets", "Outlet List"], ["dispatches", "Dispatches"], ["products", "Products"], ["packs", "Packs 6+2 aur 12+4"],
+  ["bulk", "Bulk Rates"], ["discounts", "Special Discounts"], ["promos", "Promos aur Offers"], ["rewards", "Khizr Rewards"],
+  ["accounts", "User aur Employer IDs"], ["attendance", "Attendance"], ["ledger", "Noor Coins Ledger"]
+];
+
+async function downloadExcel(kind, title, msgBox) {
+  if (typeof XLSX === "undefined") { msgBox.textContent = "Excel library load nahi hui, internet check karein"; msgBox.className = "msg"; return; }
+  const rows = await rpc("app_export", { ...creds(), p_kind: kind });
+  if (rows === null) { msgBox.textContent = title + ": ye file aapke role par available nahi"; msgBox.className = "msg"; return; }
+  const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{ "Note": "Abhi koi data nahi" }]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, title.slice(0, 30));
+  const stamp = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, "AabEKhizri_" + title.replace(/[^A-Za-z0-9]+/g, "_") + "_" + stamp + ".xlsx");
+  msgBox.textContent = title + " Excel file ban gayi (" + rows.length + " rows)";
+  msgBox.className = "msg ok";
+}
+
+function excelPanel(box) {
+  box.appendChild(h("p", "Excel files (har file alag)", "small"));
+  const m = note(box, "");
+  EXCEL_FILES.forEach(([kind, title]) => {
+    box.appendChild(button("Excel: " + title, async () => {
+      try { await downloadExcel(kind, title, m); }
+      catch (e) { m.textContent = "Error: " + e.message; m.className = "msg"; }
+    }, true));
+  });
+}
+
+async function reportCenter(box, label) {
+  box.textContent = "";
+  box.appendChild(h("p", "Report Center", "section-title"));
+  excelPanel(box);
+  const search = field("Search reports", "repSearch");
+  box.appendChild(search);
+  const list = h("div");
+  box.appendChild(list);
+  const draw = () => {
+    const q = $("repSearch").value.trim().toLowerCase();
+    list.textContent = "";
+    REPORTS.filter(r => r.name.toLowerCase().includes(q)).forEach(r => {
+      const item = h("div", r.name, "list-item");
+      item.style.cursor = "pointer";
+      item.addEventListener("click", async () => {
+        box.textContent = "";
+        box.appendChild(h("p", r.name, "section-title"));
+        box.appendChild(button("Wapas reports par", () => renderSection(label), true));
+        const view = REPORT_VIEWS[r.name];
+        if (!view) { box.appendChild(h("div", "Ye report ka data abhi connect nahi hua. Agle steps mein banega.", "small")); return; }
+        try { await view(box); } catch (e) { box.appendChild(h("div", "Error: " + e.message, "msg")); }
+      });
+      list.appendChild(item);
+    });
+  };
+  $("repSearch").addEventListener("input", draw);
+  draw();
+}
+
+// ---------- sections ----------
+async function renderSection(label) {
+  const box = $("homeContent");
+  box.textContent = "";
+  box.appendChild(h("p", label, "section-title"));
+  try {
+    if (label === "Report Center") return reportCenter(box, label);
+  if (currentRole === "admin") return await adminSection(box, label);
+    if (currentRole === "user") return await userSection(box, label);
+    if (currentRole === "employer") return await employerSection(box, label);
+    if (currentRole === "order_booker") return await bookerSection(box, label);
+    if (currentRole === "shopkeeper") return await shopSection(box, label);
+  } catch (e) {
+    note(box, "Error: " + (e && e.message ? e.message : e));
+  }
+}
+
+async function ordersList(box, rows, actions) {
+  if (!rows || rows.length === 0) { box.appendChild(h("div", "Abhi koi order nahi hai.", "small")); return; }
+  rows.forEach(o => {
+    const item = h("div", "", "list-item");
+    item.textContent = o.invoice + " | " + (o.shop || "-") + " | Rs " + o.total + " | " + statusLabel(o.status);
+    if (actions) actions(item, o);
+    box.appendChild(item);
+  });
+}
+
+async function adminSection(box, label) {
+  if (label === "Approval") {
+    box.appendChild(h("p", "Password reset requests", "small"));
+    const resets = await rpc("app_list_resets", { p_admin_id: currentUser.key, p_admin_pass: currentUser.pass }) || [];
+    if (resets.length === 0) box.appendChild(h("div", "Koi reset request nahi.", "small"));
+    resets.forEach(r => {
+      const item = h("div", r.role + " | ID: " + r.login_id + " | " + r.name, "list-item");
+      item.appendChild(button("Approve", async () => { await rpc("app_decide_reset", { p_admin_id: currentUser.key, p_admin_pass: currentUser.pass, p_request_id: r.request_id, p_approve: true }); renderSection(label); }));
+      item.appendChild(button("Reject", async () => { await rpc("app_decide_reset", { p_admin_id: currentUser.key, p_admin_pass: currentUser.pass, p_request_id: r.request_id, p_approve: false }); renderSection(label); }, true));
+      box.appendChild(item);
+    });
+    box.appendChild(h("p", "Pending orders", "small"));
+    const orders = (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "pending_approval");
+    await ordersList(box, orders, (item, o) => {
+      item.appendChild(button("Approve", async () => { await rpc("app_decide_order", { ...creds(), p_order: o.id, p_approve: true }); renderSection(label); }));
+      item.appendChild(button("Cancel", async () => { await rpc("app_decide_order", { ...creds(), p_order: o.id, p_approve: false }); renderSection(label); }, true));
+    });
+    return;
+  }
+  if (label === "Registration") {
+    const shops = await rpc("app_list_pending_shops", creds()) || [];
+    if (shops.length === 0) box.appendChild(h("div", "Koi shop pending nahi.", "small"));
+    shops.forEach(s => {
+      const item = h("div", s.shop_name + " | " + s.shopkeeper_name + " | " + s.phone + " | " + s.address, "list-item");
+      item.appendChild(button("Approve", async () => { await rpc("app_decide_shop", { ...creds(), p_shop: s.id, p_approve: true }); renderSection(label); }));
+      item.appendChild(button("Reject", async () => { await rpc("app_decide_shop", { ...creds(), p_shop: s.id, p_approve: false }); renderSection(label); }, true));
+      box.appendChild(item);
+    });
+    return;
+  }
+  if (label === "Sales") {
+    await ordersList(box, await rpc("app_list_orders", creds()) || [], (item, o) => {
+      item.appendChild(button("Delivered", async () => { await rpc("app_mark_delivered", { ...creds(), p_order: o.id }); renderSection(label); }, true));
+      item.appendChild(button("Paid", async () => { await rpc("app_mark_paid", { ...creds(), p_order: o.id }); renderSection(label); }, true));
+    });
+    return;
+  }
+  if (label === "Tokens (Noor Coins)") {
+    box.appendChild(h("p", "Token claims", "small"));
+    const claims = await rpc("app_list_claims", creds()) || [];
+    if (claims.length === 0) box.appendChild(h("div", "Abhi koi claim nahi.", "small"));
+    claims.forEach(c => {
+      const item = h("div", c.invoice + " | " + (c.shop || "-") + " | " + c.status + " | Rating " + c.rating + (c.review ? " | " + c.review : ""), "list-item");
+      if (c.status === "pending_admin") {
+        const coins = field("Noor Coins dene hain", "coins_" + c.claim_id, "number", "0");
+        item.appendChild(coins);
+        item.appendChild(button("Approve", async () => {
+          const n = Number($("coins_" + c.claim_id).value);
+          await rpc("app_decide_claim", { ...creds(), p_claim: c.claim_id, p_approve: true, p_coins: n });
+          renderSection(label);
+        }));
+        item.appendChild(button("Reject", async () => { await rpc("app_decide_claim", { ...creds(), p_claim: c.claim_id, p_approve: false, p_coins: 0 }); renderSection(label); }, true));
+      }
+      box.appendChild(item);
+    });
+    box.appendChild(h("p", "Notifications", "small"));
+    (await rpc("app_my_notifications", creds()) || []).forEach(n => box.appendChild(h("div", n.message, "list-item")));
+    return;
+  }
+  if (label === "Products") {
+    const prods = await rpc("app_list_products", {}) || [];
+    prods.forEach(p => box.appendChild(h("div", p.name, "list-item")));
+    box.appendChild(field("Naya product ka naam", "pName"));
+    box.appendChild(button("Product add karein", async () => {
+      const name = $("pName").value.trim();
+      if (!name) return;
+      await rpc("app_add_product", { ...creds(), p_name: name, p_image: "" });
+      renderSection(label);
+    }));
+    return;
+  }
+  if (label === "Users aur IDs") return accountSection(box, label, ["user", "shopkeeper"]);
+  if (label === "Outlet Assign") return assignSection(box, label);
+  if (label === "Discounts aur Promos") return promoDiscountSection(box, label);
+  if (label === "Packs aur Bulk Rate") return packsBulkSection(box, label);
+  if (label === "Account Number") {
+    const acc = await rpc("app_get_account", {});
+    box.appendChild(h("div", "Abhi: " + (acc || "set nahi hai"), "small"));
+    box.appendChild(field("Bank ka naam", "accBank"));
+    box.appendChild(field("Account number", "accNum"));
+    const m = note(box, "");
+    box.appendChild(button("Save", async () => {
+      const ok = await rpc("app_set_account", { ...creds(), p_number: $("accNum").value.trim(), p_bank: $("accBank").value.trim() });
+      m.textContent = ok ? "Save ho gaya" : "Save nahi hua";
+      m.className = ok ? "msg ok" : "msg";
+    }));
+    return;
+  }
+  box.appendChild(h("div", "Ye section agle step mein banega.", "small"));
+}
+
+async function userSection(box, label) {
+  if (label === "Employer aur Booker IDs") return accountSection(box, label, ["employer", "order_booker"]);
+  if (label === "Outlets") return assignSection(box, label);
+  if (label === "Shopkeeper Orders") {
+    const rows = (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "pending_approval");
+    await ordersList(box, rows, (item, o) => {
+      item.appendChild(button("Approve", async () => { await rpc("app_decide_order", { ...creds(), p_order: o.id, p_approve: true }); renderSection(label); }));
+    });
+    return;
+  }
+  await ordersList(box, await rpc("app_list_orders", creds()) || []);
+}
+
+async function employerSection(box, label) {
+  if (label === "Shopkeeper Orders" || label === "Dispatch") {
+    const approved = (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "approved");
+    if (approved.length === 0) { box.appendChild(h("div", "Abhi approved order nahi hai.", "small")); return; }
+    const chosen = [];
+    approved.forEach(o => {
+      const row = h("label", o.invoice + " | " + (o.shop || "-") + " | Rs " + o.total, "list-item");
+      const cb = h("input"); cb.type = "checkbox"; cb.style.width = "auto"; cb.style.marginRight = "8px";
+      cb.addEventListener("change", () => { if (cb.checked) chosen.push(o.id); else chosen.splice(chosen.indexOf(o.id), 1); });
+      row.prepend(cb);
+      box.appendChild(row);
+    });
+    const m = note(box, "");
+    box.appendChild(button("Dispatch banayein", async () => {
+      if (chosen.length === 0) { m.textContent = "Pehle order select karein"; m.className = "msg"; return; }
+      const id = await rpc("app_create_dispatch", { ...creds(), p_orders: chosen });
+      if (!id) { m.textContent = "Dispatch nahi bana"; return; }
+      const sum = await rpc("app_dispatch_summary", { ...creds(), p_dispatch: id });
+      showPrint(box, sum);
+    }));
+    return;
+  }
+  if (label === "Shipping Status") {
+    const rows = (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "dispatched" || o.status === "shipping");
+    await ordersList(box, rows, (item, o) => {
+      item.appendChild(button("Delivered", async () => { await rpc("app_mark_delivered", { ...creds(), p_order: o.id }); renderSection(label); }));
+    });
+    return;
+  }
+  if (label === "Printing") {
+    box.appendChild(h("div", "Dispatch banate hi print summary yahan dikhegi. Pehle Dispatch se dispatch banayein.", "small"));
+    return;
+  }
+  await ordersList(box, await rpc("app_list_orders", creds()) || []);
+}
+
+function showPrint(box, sum) {
+  const p = h("div", "", "list-item");
+  if (!sum) { p.textContent = "Summary nahi mili"; box.appendChild(p); return; }
+  p.textContent = "Dispatch: " + sum.dispatch_no + " | Bookings: " + sum.bookings + " | Bills: " + sum.bills + " | Amount: Rs " + sum.amount;
+  box.appendChild(p);
+  box.appendChild(button("Print karein", () => window.print()));
+}
+
+async function bookerSection(box, label) {
+  if (label === "Order Place" || label === "Order") return orderForm(box, label);
+  if (label === "Shop Register") return shopForm(box, label);
+  if (label === "Attendance") return attendanceSection(box, label);
+  if (label === "Sync aur Configure") return syncSection(box, label);
+  if (label === "Record Sales") return recordSalesSection(box, label);
+  if (label === "Tokens") return tokensSection(box, label);
+  if (label === "KPIs") return kpiSection(box);
+  if (label === "Outlets") return outletsSection(box, label);
+  box.appendChild(h("div", "Ye section agle step mein banega.", "small"));
+}
+
+async function shopSection(box, label) {
+  if (label === "Order") return orderForm(box, label);
+  if (label === "My Orders") { await ordersList(box, await rpc("app_list_orders", creds()) || []); return; }
+  if (label === "Shop Register") return shopForm(box, label);
+  if (label === "Tokens") return tokensSection(box, label);
+  if (label === "Products") {
+    const prods = await rpc("app_list_products", {}) || [];
+    if (prods.length === 0) box.appendChild(h("div", "Abhi koi product nahi.", "small"));
+    prods.forEach(p => box.appendChild(h("div", p.name, "list-item")));
+    return;
+  }
+  box.appendChild(h("div", "Ye section agle step mein banega.", "small"));
+}
+
+async function orderForm(box, label) {
+  const shops = await rpc("app_list_shops", creds()) || [];
+  const packs = (await rpc("app_list_packs", {}) || []).filter(p => p.active);
+  const sel = h("select"); sel.id = "ordShop";
+  sel.style.cssText = "width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;border:0.5px solid rgba(255,255,255,0.25);";
+  shops.forEach(x => { const o = h("option", x.shop_name); o.value = x.id; sel.appendChild(o); });
+  if (shops.length === 0) sel.appendChild(h("option", "Koi approved shop nahi"));
+  box.appendChild(h("label", "Shop"));
+  box.appendChild(sel);
+
+  const pk = h("select"); pk.id = "ordPack";
+  pk.style.cssText = sel.style.cssText;
+  const none = h("option", "Koi pack nahi (quantity ya amount)"); none.value = ""; pk.appendChild(none);
+  packs.forEach(p => { const o = h("option", p.code + " (Rs " + p.price + ")"); o.value = p.code; pk.appendChild(o); });
+  box.appendChild(h("label", "Pack"));
+  box.appendChild(pk);
+  box.appendChild(field("Quantity (bottles, bulk ke liye)", "ordQty", "number", "0"));
+  box.appendChild(field("Amount (Rs, sirf agar pack aur quantity nahi)", "ordTotal", "number", "0"));
+  const m = note(box, "");
+  box.appendChild(button("Order bhejein", async () => {
+    const invoice = "INV-" + Date.now();
+    const qty = Number($("ordQty").value) || null;
+    const manual = Number($("ordTotal").value) || null;
+    const res = await rpc("app_create_order_v2", { ...creds(), p_shop: sel.value, p_invoice: invoice, p_pack: pk.value || null, p_qty: qty, p_manual_total: manual });
+    if (!res || !res.ok) { m.textContent = (res && res.error) || "Order nahi hua"; m.className = "msg"; return; }
+    m.textContent = "Order ho gaya: " + invoice + " | Total Rs " + res.total;
+    m.className = "msg ok";
+  }));
+}
+
+const ATT_LABEL = { check_in: "Check In", check_out: "Check Out", leave: "Leave" };
+function getLiveLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error("no geo"));
+    navigator.geolocation.getCurrentPosition(
+      p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      () => reject(new Error("denied")),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  });
+}
+
+async function attendanceSection(box, label) {
+  const data = await rpc("app_my_attendance", creds()) || { today: [], recent: [] };
+  const today = data.today || [];
+  box.appendChild(h("div", "Aaj: " + (today.length ? today.map(t => ATT_LABEL[t.kind]).join(" , ") : "Abhi koi entry nahi"), "small"));
+  const m = note(box, "");
+  const mark = async (kind) => {
+    m.textContent = "";
+    try {
+      let loc = { lat: null, lng: null };
+      if (kind !== "leave") {
+        m.textContent = "Live location le rahe hain...";
+        loc = await getLiveLocation();
+      }
+      const res = await rpc("app_mark_attendance", { ...creds(), p_kind: kind, p_lat: loc.lat, p_lng: loc.lng });
+      const msgs = { "location needed": "Location chahiye. Phone ki location on karke dobara koshish karein", "already checked in or on leave": "Aap aaj pehle hi check in kar chuke hain ya leave par hain", "check in first": "Pehle Check In karein", "already marked today": "Aaj ki attendance pehle lag chuki hai" };
+      m.textContent = res && res.ok ? ATT_LABEL[kind] + " lag gaya" : (msgs[res && res.error] || "Attendance nahi lagi");
+      m.className = res && res.ok ? "msg ok" : "msg";
+      if (res && res.ok) renderSection(label);
+    } catch (e) {
+      m.textContent = "Location nahi mili. Location permission allow karein.";
+      m.className = "msg";
+    }
+  };
+  box.appendChild(button("Check In", () => mark("check_in")));
+  box.appendChild(button("Check Out", () => mark("check_out"), true));
+  box.appendChild(button("Leave", () => mark("leave"), true));
+  box.appendChild(h("p", "Pichhli entries", "small"));
+  (data.recent || []).forEach(r => box.appendChild(h("div", ATT_LABEL[r.kind] + " | " + new Date(r.at).toLocaleString("en-PK", { timeZone: "Asia/Karachi" }), "list-item")));
+}
+
+async function kpiSection(box) {
+  const sales = await rpc("app_booker_sales_summary", creds()) || {};
+  const k0 = await rpc("app_booker_kpis", creds()) || {};
+  [
+    ["Aaj ke sales entries", sales.entries_today || 0],
+    ["Aaj ke total invoices", sales.invoices_today || 0],
+    ["Aaj ke unique SKUs", sales.skus_today || 0],
+    ["Is mahine ke total invoices", sales.invoices_month || 0],
+    ["Assigned outlets", k0.outlets || 0],
+    ["Aaj ke orders", k0.orders_today || 0]
+  ].forEach(r => box.appendChild(h("div", r[0] + ": " + r[1], "list-item")));
+  return;
+  const rows = [
+    ["Assigned outlets", k.outlets || 0],
+    ["Aaj ke orders", k.orders_today || 0],
+    ["Is mahine ke orders", k.orders_month || 0],
+    ["Is mahine ki value (Rs)", k.value_month || 0],
+    ["Pending approval", k.pending || 0]
+  ];
+  rows.forEach(r => box.appendChild(h("div", r[0] + ": " + r[1], "list-item")));
+}
+
+async function tokensSection(box, label) {
+  const coins = await rpc("app_my_coins", creds());
+  if (coins) box.appendChild(h("div", "Noor Coins balance: " + coins.balance, "list-item"));
+  box.appendChild(h("p", "Token claim karein (delivery aur payment ke baad, photo ka invoice number likhein)", "small"));
+  const orders = (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "delivered");
+  if (orders.length === 0) box.appendChild(h("div", "Abhi koi delivered order nahi.", "small"));
+  orders.forEach(o => {
+    const item = h("div", o.invoice + " | " + (o.shop || "-") + " | Rs " + o.total, "list-item");
+    item.appendChild(button("Claim karein", () => claimForm(box, label, o)));
+    box.appendChild(item);
+  });
+  box.appendChild(h("p", "Claims ki list", "small"));
+  (await rpc("app_list_claims", creds()) || []).forEach(c => box.appendChild(h("div", c.invoice + " | " + c.status + " | Coins: " + c.coins, "list-item")));
+  box.appendChild(h("p", "Notifications", "small"));
+  (await rpc("app_my_notifications", creds()) || []).forEach(n => box.appendChild(h("div", n.message, "list-item")));
+}
+
+function claimForm(box, label, o) {
+  box.textContent = "";
+  box.appendChild(h("p", "Claim: " + o.invoice, "section-title"));
+  box.appendChild(field("Photo ka naam (order ki photo)", "clPhoto"));
+  box.appendChild(field("Photo mein likha invoice number", "clInv"));
+  box.appendChild(field("Review (kya kehna chahte hain)", "clReview"));
+  const rate = h("select"); rate.id = "clRate";
+  rate.style.cssText = "width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;border:0.5px solid rgba(255,255,255,0.25);";
+  [5,4,3,2,1].forEach(n => { const op = h("option", n + " star"); op.value = n; rate.appendChild(op); });
+  box.appendChild(h("label", "Rating"));
+  box.appendChild(rate);
+  const m = note(box, "");
+  box.appendChild(button("Claim bhejein", async () => {
+    const res = await rpc("app_submit_claim", { ...creds(), p_order: o.id, p_photo: $("clPhoto").value, p_invoice_in_photo: $("clInv").value.trim(), p_review: $("clReview").value, p_rating: Number(rate.value) });
+    if (!res || !res.ok) { m.textContent = (res && res.error) || "Claim nahi gaya"; m.className = "msg"; return; }
+    m.textContent = res.status === "auto_rejected" ? "Invoice number match nahi hua, claim reject ho gaya. Admin ko bata diya gaya hai." : "Claim bhej diya gaya, admin approval ke baad coins milenge.";
+    m.className = res.status === "auto_rejected" ? "msg" : "msg ok";
+  }));
+  box.appendChild(button("Wapas", () => renderSection(label), true));
+}
+
+async function syncSection(box, label) {
+  box.appendChild(h("div", "Data fetch aur update karein: outlets, products, packs aur promos.", "small"));
+  const out = note(box, "");
+  box.appendChild(button("Data fetch / update", async () => {
+    const d = await rpc("app_sync_data", creds());
+    if (!d) { out.textContent = "Sync nahi hua"; out.className = "msg"; return; }
+    out.textContent = "Ho gaya. Outlets: " + d.outlets + " | Products: " + d.products + " | Packs: " + d.packs + " | Promos: " + ((d.promos || []).join(", ") || "koi nahi") + " | " + d.synced_at;
+    out.className = "msg ok";
+  }));
+  box.appendChild(button("Password badlein", () => {
+    $("oldPass").value = ""; $("newPass").value = ""; setMsg($("changeMsg"), "");
+    show("screenChange");
+  }, true));
+}
+
+async function recordSalesSection(box, label) {
+  const shops = await rpc("app_list_shops", creds()) || [];
+  const sel = h("select"); sel.id = "rsShop";
+  sel.style.cssText = "width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;border:0.5px solid rgba(255,255,255,0.25);";
+  shops.forEach(x => { const o = h("option", x.shop_name); o.value = x.id; sel.appendChild(o); });
+  if (shops.length === 0) sel.appendChild(h("option", "Koi outlet nahi"));
+  box.appendChild(h("label", "Outlet"));
+  box.appendChild(sel);
+  box.appendChild(field("Total Invoices", "rsInv", "number", "0"));
+  box.appendChild(field("Unique SKUs", "rsSku", "number", "0"));
+  const m = note(box, "");
+  box.appendChild(button("Save", async () => {
+    const res = await rpc("app_record_sales", { ...creds(), p_shop: sel.value, p_invoices: Number($("rsInv").value) || 0, p_skus: Number($("rsSku").value) || 0 });
+    if (res && res.ok) { m.textContent = "Save ho gaya"; m.className = "msg ok"; renderSection(label); }
+    else { m.textContent = (res && res.error) || "Save nahi hua"; m.className = "msg"; }
+  }));
+}
+
+const VISIT_STATUS = {
+  ordered: { label: "Order ho gaya", color: "#16a34a" },
+  closed: { label: "Band (closed)", color: "#fca5a5" },
+  has_stock: { label: "Stock already hai", color: "#f97316" }
+};
+
+function weekStrip(box) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
+  const row = h("div", "", "list-item");
+  row.style.cssText = "display:flex;justify-content:space-between;gap:4px;text-align:center;";
+  for (let i = -3; i <= 3; i++) {
+    const d = new Date(today); d.setDate(today.getDate() + i);
+    const cell = h("div");
+    cell.style.cssText = "flex:1;padding:6px 0;border-radius:8px;font-size:12px;" + (i === 0 ? "background:#c9a86a;color:#111827;font-weight:600;" : "");
+    cell.textContent = days[d.getDay()] + " " + d.getDate();
+    row.appendChild(cell);
+  }
+  box.appendChild(row);
+}
+
+async function outletsSection(box, label) {
+  weekStrip(box);
+  const legend = h("div", "Green: order ho gaya | Light red: band | Orange: stock already hai", "small");
+  box.appendChild(legend);
+  const rows = await rpc("app_my_outlets", creds()) || [];
+  if (rows.length === 0) { box.appendChild(h("div", "Aapko abhi koi outlet assign nahi hua.", "small")); return; }
+  rows.forEach(o => {
+    const st = VISIT_STATUS[o.today];
+    const card = h("div", "", "list-item");
+    card.style.borderLeft = "6px solid " + (st ? st.color : "#6b7280");
+    card.appendChild(h("div", o.shop, "section-title"));
+    card.appendChild(h("div", o.address + " | " + o.phone, "small"));
+    card.appendChild(h("div", "Aaj ki halat: " + (st ? st.label : "abhi koi entry nahi"), "small"));
+    const map = h("a", "Map par dekhein");
+    map.href = "https://www.google.com/maps?q=" + o.lat + "," + o.lng;
+    map.target = "_blank"; map.rel = "noopener";
+    map.style.cssText = "color:#e8d7b0;text-decoration:underline;font-size:13px;";
+    card.appendChild(map);
+    const btns = h("div"); btns.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;";
+    Object.keys(VISIT_STATUS).forEach(k => {
+      const b = button(VISIT_STATUS[k].label, async () => {
+        await rpc("app_set_visit", { ...creds(), p_shop: o.shop_id, p_status: k });
+        renderSection(label);
+      }, true);
+      b.style.width = "auto"; b.style.marginTop = "0";
+      btns.appendChild(b);
+    });
+    card.appendChild(btns);
+    box.appendChild(card);
+  });
+}
+
+async function assignSection(box, label) {
+  box.appendChild(h("p", "Outlet assign karein (order booker ko)", "small"));
+  const bookers = await rpc("app_list_bookers", creds()) || [];
+  const shops = await rpc("app_list_shops", creds()) || [];
+  if (bookers.length === 0) { box.appendChild(h("div", "Abhi koi order booker nahi. Pehle ID banayein.", "small")); return; }
+  if (shops.length === 0) { box.appendChild(h("div", "Abhi koi approved outlet nahi.", "small")); return; }
+  const m = note(box, "");
+  bookers.forEach(bk => {
+    box.appendChild(h("p", bk.name + " (" + bk.login_id + ")", "section-title"));
+    shops.forEach(sh => {
+      const row = h("label", sh.shop_name, "list-item");
+      const cb = h("input"); cb.type = "checkbox"; cb.style.width = "auto"; cb.style.marginRight = "8px";
+      cb.checked = (bk.outlets || []).includes(sh.id);
+      cb.addEventListener("change", async () => {
+        const ok = await rpc("app_set_assignment", { ...creds(), p_booker_login: bk.login_id, p_shop: sh.id, p_on: cb.checked });
+        m.textContent = ok ? "Assignment save ho gaya" : "Ye assignment save nahi hua";
+        m.className = ok ? "msg ok" : "msg";
+      });
+      row.prepend(cb);
+      box.appendChild(row);
+    });
+  });
+}
+
+async function shopForm(box, label) {
+  const fields = [["Shopkeeper ka naam", "rName"], ["Shop ka naam", "rShop"], ["Shop ka phone", "rPhone"], ["Shop ka mukammal address", "rAddr"], ["Latitude", "rLat", "number"], ["Longitude", "rLng", "number"], ["Shop ki image (file ka naam)", "rImg"]];
+  fields.forEach(f => box.appendChild(field(f[0], f[1], f[2])));
+  const m = note(box, "");
+  box.appendChild(button("Shop register karein", async () => {
+    const ok = await rpc("app_register_shop", { ...creds(), p_shopkeeper_name: $("rName").value, p_shop_name: $("rShop").value, p_shop_phone: $("rPhone").value, p_address: $("rAddr").value, p_lat: Number($("rLat").value), p_lng: Number($("rLng").value), p_image: $("rImg").value });
+    m.textContent = ok ? "Shop register ho gayi. Admin approval ke baad active hogi." : "Shop register nahi hui, sab fields bharein";
+    m.className = ok ? "msg ok" : "msg";
+  }));
+}
+
+function openHome() {
+  $("homeName").textContent = currentUser.name;
+  $("homeId").textContent = "ID: " + currentUser.key;
+  $("homeDes").textContent = "Designation: " + currentUser.des;
+  const side = $("sideItems");
+  side.textContent = "";
+  const items = PILLS[currentRole];
+  items.forEach(label => side.appendChild(sideItem(label, () => { closeSide(); renderSection(label); })));
+  side.appendChild(sideItem("Password badlein", () => {
+    closeSide();
+    $("oldPass").value = ""; $("newPass").value = ""; setMsg($("changeMsg"), "");
+    show("screenChange");
+  }));
+  side.appendChild(sideItem("Logout", () => { closeSide(); currentUser = null; backToStart(); }));
+  renderSection(items[0]);
+  show("screenHome");
+}
+
+$("homeMenuBtn").addEventListener("click", openSide);
+$("overlay").addEventListener("click", closeSide);
+$("backHome").addEventListener("click", () => openHome());
+
+// CHANGE PASSWORD (real database)
+$("changeBtn").addEventListener("click", async () => {
+  const oldP = $("oldPass").value;
+  const newP = $("newPass").value;
+  try {
+    const ok = await rpc("app_change_password", { p_id: currentUser.key, p_old: oldP, p_new: newP });
+    if (ok) { currentUser.pass = newP; setMsg($("changeMsg"), "Password badal gaya.", true); }
+    else setMsg($("changeMsg"), "Purana password galat hai, ya naya 6 characters se chhota hai");
+  } catch (e) {
+    setMsg($("changeMsg"), "Connection mein masla hai, dobara koshish karein");
+  }
+});
+
+// DARK / LIGHT MODE
+const themeBtn = document.getElementById("themeBtn");
+function applyTheme(light) {
+  document.body.classList.toggle("light", light);
+  themeBtn.textContent = light ? "Dark" : "Light";
+}
+themeBtn.addEventListener("click", () => applyTheme(!document.body.classList.contains("light")));
+applyTheme(false);
+// HASH ROUTING: index.html#admin  #user  #employer  #booker  #shopkeeper
+const HASH_ROUTES = {
+  "admin": "admin",
+  "user": "user",
+  "employer": "employer",
+  "booker": "order_booker",
+  "order-booker": "order_booker",
+  "shopkeeper": "shopkeeper"
+};
+function openFromHash() {
+  const key = (location.hash || "").replace("#", "").trim().toLowerCase();
+  const role = HASH_ROUTES[key];
+  if (!role) return;
+  const btn = document.querySelector('.role-btn[data-role="' + role + '"]');
+  if (btn) btn.click();
+}
+
+// SHOPKEEPER LOGIN BY PHONE (+92)
+function normPhone(v) {
+  let d = String(v || "").replace(/\D/g, "");
+  if (d.startsWith("92")) d = d.slice(2);
+  if (d.startsWith("0")) d = d.slice(1);
+  return (d.length === 10 && d[0] === "3") ? "+92" + d : null;
+}
+let shopCaptcha = "";
+function newShopCaptcha() {
+  const pools = [
+    "0123456789",                                  // numbers
+    "ABCDEFGHJKLMNPQRSTUVWXYZ",                    // English letters
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"             // mixed
+  ];
+  const pool = pools[Math.floor(Math.random() * pools.length)];
+  let code = "";
+  for (let i = 0; i < 5; i++) code += pool[Math.floor(Math.random() * pool.length)];
+  shopCaptcha = code;
+  const box = $("shopCaptcha");
+  box.textContent = code;
+  box.style.transform = "skewX(" + (Math.random() * 16 - 8).toFixed(1) + "deg) rotate(" + (Math.random() * 6 - 3).toFixed(1) + "deg)";
+  $("shopCode").value = "";
+}
+$("shopCaptchaRefresh").addEventListener("click", newShopCaptcha);
+
+function openShopLogin() {
+  const saved = localStorage.getItem("ak_phone") || "";
+  $("shopPhone").value = saved ? saved.replace("+92", "") : "";
+  $("shopRemember").checked = !!saved;
+  $("shopPin").value = "";
+  newShopCaptcha();
+  setMsg($("shopMsg"), "");
+  show("screenShop");
+}
+function openShopReg(phone) {
+  $("regPhoneShow").textContent = "Phone: " + phone;
+  $("rgShopPhone").value = phone;
+  ["rgName","rgShop","rgAddr","rgLat","rgLng","rgImg","rgPass"].forEach(id => $(id).value = "");
+  setMsg($("rgMsg"), "");
+  show("screenShopReg");
+}
+$("shopBack").addEventListener("click", () => backToStart());
+$("shopToReg").addEventListener("click", () => {
+  const p = normPhone($("shopPhone").value);
+  if (!p) { setMsg($("shopMsg"), "Phone +92 ke baad 10 digits (3 se shuru) likhein"); return; }
+  openShopReg(p);
+});
+$("shopSignIn").addEventListener("click", async () => {
+  const p = normPhone($("shopPhone").value);
+  if (!p) { setMsg($("shopMsg"), "Phone +92 ke baad 10 digits (3 se shuru) likhein"); return; }
+  // every Login press checks the code shown on screen, then the captcha refreshes automatically
+  const expectedCode = shopCaptcha;
+  const enteredCode = ($("shopCode").value || "").replace(/\s/g, "").toUpperCase();
+  newShopCaptcha();
+  if (enteredCode !== expectedCode.toUpperCase()) {
+    setMsg($("shopMsg"), "Code galat hai, naya code dekh kar dobara likhein");
+    return;
+  }
+  const pin = $("shopPin").value;
+  try {
+    const exists = await rpc("app_phone_exists", { p_phone: p });
+    if (!exists) { openShopReg(p); return; }
+    if (!pin) { setMsg($("shopMsg"), "PIN / password daalein"); return; }
+    const user = await rpc("app_login", { p_id: p, p_pass: pin });
+    if (!user || user.role !== "shopkeeper") { setMsg($("shopMsg"), "PIN / password galat hai"); newShopCaptcha(); return; }
+    if ($("shopRemember").checked) localStorage.setItem("ak_phone", p); else localStorage.removeItem("ak_phone");
+    currentRole = "shopkeeper";
+    currentUser = { key: user.login_id, name: user.name, des: user.designation, pass: pin, role: user.role };
+    openHome();
+  } catch (e) {
+    setMsg($("shopMsg"), "Error: " + e.message);
+  }
+});
+$("rgBack").addEventListener("click", () => openShopLogin());
+$("rgSubmit").addEventListener("click", async () => {
+  const phone = normPhone($("rgShopPhone").value) || normPhone($("regPhoneShow").textContent.replace("Phone: ", ""));
+  const pass = $("rgPass").value;
+  if (pass.length < 6) { setMsg($("rgMsg"), "Password kam az kam 6 characters ka ho"); return; }
+  try {
+    const res = await rpc("app_self_register", {
+      p_phone: phone, p_pass: pass,
+      p_shopkeeper_name: $("rgName").value.trim(), p_shop_name: $("rgShop").value.trim(),
+      p_shop_phone: $("rgShopPhone").value.trim(), p_address: $("rgAddr").value.trim(),
+      p_lat: Number($("rgLat").value), p_lng: Number($("rgLng").value), p_image: $("rgImg").value.trim()
+    });
+    const msgs = { exists: "Ye phone pehle se registered hai, login karein", "phone format": "Phone format galat hai", "short password": "Password kam az kam 6 characters ka ho" };
+    if (res && res.ok) { setMsg($("rgMsg"), "Registration ho gayi. Admin approval ke baad shop active hogi.", true); }
+    else setMsg($("rgMsg"), msgs[res && res.error] || "Registration nahi hui, sab fields bharein");
+  } catch (e) {
+    setMsg($("rgMsg"), "Error: " + e.message);
+  }
+});
+
+// LOCKED ROLE PAGE: this page only serves one role. No role switching from here.
+const LOCKED_ROLE = "user";
+function backToStart() {
+  if (!LOCKED_ROLE) { show("screenRoles"); return; }
+  if (LOCKED_ROLE === "shopkeeper") { openShopLogin(); return; }
+  show("screenLogin");
+}
+(function lockRole() {
+  const btn = document.querySelector('.role-btn[data-role="' + LOCKED_ROLE + '"]');
+  const roles = document.getElementById("screenRoles");
+  if (roles) roles.classList.add("hidden");
+  if (btn) btn.click();
+})();
+</script>
+</body>
+</html>

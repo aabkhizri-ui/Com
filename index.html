@@ -53,6 +53,30 @@ body.light .msg.ok { color: #15803d; }
 .sidebar.open { transform: translateX(0); }
 .sidebar .list-item { cursor: pointer; margin-top: 6px; }
 body.light .sidebar { background: #ffffff; color: #111827; }
+
+/* SHOPKEEPER LOGIN */
+.shop-wrap { max-width: 400px; margin: 0 auto; padding: 18px 16px; text-align: center; }
+.shop-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: contain; background: #ffffff; display: block; margin: 8px auto 14px; }
+.shop-tabs { display: flex; background: #e5e7eb; border-radius: 14px; padding: 6px; margin-bottom: 14px; }
+.shop-tab { flex: 1; background: linear-gradient(90deg, #4338ca, #7c3aed); color: #ffffff; border-radius: 12px; padding: 10px; font-weight: 600; }
+.shop-card { background: #e5e7eb; color: #111827; border-radius: 18px; padding: 22px 18px; text-align: left; }
+.shop-card h2 { text-align: center; font-size: 26px; margin: 0 0 6px; }
+.shop-sub { text-align: center; color: #4b5563; font-size: 14px; margin: 0 0 16px; }
+.shop-card label { color: #374151; font-size: 14px; display: block; margin: 12px 0 6px; }
+.shop-card input { background: #ffffff; color: #111827; border: none; border-radius: 12px; padding: 12px; width: 100%; font-size: 15px; }
+.phone-row { display: flex; align-items: center; background: #ffffff; border-radius: 12px; padding: 0 12px; }
+.phone-row input { border-radius: 0; padding-left: 8px; }
+.prefix { color: #4338ca; font-weight: 600; font-size: 15px; }
+.chk { display: flex; align-items: center; gap: 8px; }
+.chk input { width: auto; }
+.shop-btn { width: 100%; background: #db2777; color: #ffffff; border: none; border-radius: 14px; padding: 14px; font-size: 16px; margin-top: 16px; cursor: pointer; }
+.shop-reg { color: #e5e7eb; font-size: 14px; margin-top: 18px; }
+.shop-reg a { color: #818cf8; cursor: pointer; text-decoration: underline; }
+
+.code-row { display: flex; align-items: center; gap: 8px; }
+.code-row input { flex: 1; min-width: 0; }
+.captcha { background: #f3f4f6; border: 2px solid #374151; border-radius: 6px; padding: 6px 10px; font-size: 20px; font-weight: 700; letter-spacing: 3px; display: inline-block; color: #111827; font-family: monospace; user-select: none; }
+.captcha-refresh { background: none; border: none; color: #4a7c59; font-size: 24px; cursor: pointer; padding: 0 4px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -87,6 +111,55 @@ body.light .sidebar { background: #ffffff; color: #111827; }
       <a class="link" id="forgotLink">Forgot Password?</a>
       <a class="link" id="backRoles1">Wapas role selection par jayein</a>
       <div class="msg" id="loginMsg"></div>
+    </div>
+  </section>
+
+  <!-- SHOPKEEPER LOGIN (phone +92) -->
+  <section id="screenShop" class="hidden">
+    <div class="shop-wrap">
+      <img class="shop-logo" src="logo.png" alt="Aab-e-Khizri logo">
+      <div class="shop-tabs"><div class="shop-tab active">Phone No</div></div>
+      <div class="shop-card">
+        <h2>Welcome Back</h2>
+        <p class="shop-sub">Apne registered phone number se sign in karein</p>
+        <label>Phone Number</label>
+        <div class="phone-row"><span class="prefix">+92</span><input id="shopPhone" type="tel" inputmode="numeric" placeholder="3XXXXXXXXX"></div>
+        <label>PIN / Password</label>
+        <input id="shopPin" type="password" placeholder="PIN / Password">
+        <label>Enter Code</label>
+        <div class="code-row">
+          <input id="shopCode" type="text" inputmode="numeric" placeholder="Code No.">
+          <div class="captcha" id="shopCaptcha">10050</div>
+          <button class="captcha-refresh" id="shopCaptchaRefresh" type="button" aria-label="Naya code">&#8635;</button>
+        </div>
+        <label class="chk"><input type="checkbox" id="shopRemember" checked> Remember me</label>
+        <button class="shop-btn" id="shopSignIn">Sign In</button>
+        <div class="msg" id="shopMsg"></div>
+      </div>
+      <p class="shop-reg">Account nahi hai? <a id="shopToReg">Register</a></p>
+      <a class="link" id="shopBack">Wapas role selection par jayein</a>
+    </div>
+  </section>
+
+  <!-- SHOPKEEPER REGISTRATION -->
+  <section id="screenShopReg" class="hidden">
+    <div class="shop-wrap">
+      <img class="shop-logo" src="logo.png" alt="Aab-e-Khizri logo">
+      <div class="shop-card">
+        <h2>Register</h2>
+        <p class="shop-sub" id="regPhoneShow"></p>
+        <label>Shopkeeper ka naam</label><input id="rgName">
+        <label>Shop ka naam</label><input id="rgShop">
+        <label>Shop ka phone</label><input id="rgShopPhone" type="tel">
+        <label>Shop ka mukammal address</label><input id="rgAddr">
+        <label>Latitude</label><input id="rgLat" type="number" step="any">
+        <label>Longitude</label><input id="rgLng" type="number" step="any">
+        <label>Shop ki image (file ka naam)</label><input id="rgImg">
+        <label>PIN / Password (kam az kam 6)</label><input id="rgPass" type="password">
+        <button class="shop-btn" id="rgSubmit">Register karein</button>
+        <div class="msg" id="rgMsg"></div>
+      </div>
+      <a class="link" id="rgBack">Login par wapas</a>
     </div>
   </section>
 
@@ -135,25 +208,12 @@ body.light .sidebar { background: #ffffff; color: #111827; }
 </div>
 
 <script>
-/*
-  DEMO MODE. Supabase is not connected yet.
-  Next step: replace DEMO_USERS checks with Supabase Auth calls.
-  Demo accounts (remove before going live):
-  admin001/admin123, user001/user123, emp001/emp123, booker001/book123, shop 03001234567/shop123
-*/
-const DEMO_USERS = {
-  admin:        [{ key: "admin001", pass: "admin123", name: "Admin", des: "Admin" }],
-  user:         [{ key: "user001", pass: "user123", name: "User", des: "User" }],
-  employer:     [{ key: "emp001", pass: "emp123", name: "Employer", des: "Employer" }],
-  order_booker: [{ key: "booker001", pass: "book123", name: "Order Booker", des: "Order Booker" }],
-  shopkeeper:   [{ key: "03001234567", pass: "shop123", name: "Shopkeeper", des: "Shopkeeper" }]
-};
 
 const PILLS = {
-  admin: ["Approval", "Registration", "Dispatch", "Review", "Sales", "Discounts aur Promos", "Packs aur Bulk Rate", "Tokens (Noor Coins)", "Khizr Rewards", "Users aur IDs", "Report Center", "Products", "Account Number", "Reports"],
-  user: ["Shopkeeper Orders", "Outlets", "Dispatch Status", "My Orders", "Employer aur Booker IDs", "Report Center"],
+  admin: ["Approval", "Registration", "Dispatch", "Review", "Sales", "Discounts aur Promos", "Packs aur Bulk Rate", "Tokens (Noor Coins)", "Khizr Rewards", "Users aur IDs", "Outlet Assign", "Report Center", "Products", "Account Number", "Reports"],
+  user: ["Shopkeeper Orders", "Outlets", "Dispatch Status", "My Orders", "Employer aur Booker IDs", "Outlets", "Report Center"],
   employer: ["Shopkeeper Orders", "Dispatch", "Printing", "Shipping Status", "Report Center"],
-  order_booker: ["Order Place", "Shop Register", "Attendance", "KPIs", "Outlets", "Tokens"],
+  order_booker: ["Sync aur Configure", "Outlets", "Order Place", "Record Sales", "Attendance", "KPIs", "Shop Register", "Tokens"],
   shopkeeper: ["Order", "My Orders", "Tokens", "Shop Register", "Products"]
 };
 
@@ -164,7 +224,7 @@ let currentUser = null;
 
 const $ = id => document.getElementById(id);
 function show(id) {
-  ["screenRoles","screenLogin","screenForgot","screenHome","screenChange"].forEach(s => $(s).classList.add("hidden"));
+  ["screenRoles","screenLogin","screenForgot","screenHome","screenChange","screenShop","screenShopReg"].forEach(s => $(s).classList.add("hidden"));
   $(id).classList.remove("hidden");
   window.scrollTo(0, 0);
 }
@@ -184,6 +244,7 @@ document.querySelectorAll(".role-btn").forEach(btn => {
     $("loginId").value = "";
     $("loginPass").value = "";
     setMsg($("loginMsg"), "");
+    if (currentRole === "shopkeeper") { openShopLogin(); return; }
     show("screenLogin");
   });
 });
@@ -376,24 +437,28 @@ async function packsBulkSection(box, label) {
     bm.textContent = r ? "Bulk rate add ho gaya" : "Ye add nahi hua"; renderSection(label);
   }));
 }
-const REPORTS = [{"code": "R106", "name": "Sales / Package and Outlet"}, {"code": "R108", "name": "Sales / Package and Outlet (Discounted and Non-Discounted)"}, {"code": "R112", "name": "Order based Sales Summary"}, {"code": "R115", "name": "Stock Summary"}, {"code": "R116", "name": "Order Booker / Outlet Activity"}, {"code": "R117", "name": "Backorder Summary"}, {"code": "R119", "name": "Lifting / Package and Distributor"}, {"code": "R120", "name": "Order Booker Tracking"}, {"code": "R123", "name": "Timestamp Analysis"}, {"code": "R128", "name": "PJP List"}, {"code": "R145", "name": "Cancelled Orders"}, {"code": "R165", "name": "Unproductive Outlets"}, {"code": "R177", "name": "Distributor Ledger"}, {"code": "R193", "name": "Outlet Sales"}, {"code": "R208", "name": "Lifting vs. Secondary"}, {"code": "R209", "name": "Order Booker Tracking (Secondary User)"}, {"code": "R210", "name": "PJP List (Secondary User)"}, {"code": "R212", "name": "Lifting Orders (Secondary User)"}, {"code": "R214", "name": "Order Booker Sales (Secondary User)"}, {"code": "R226", "name": "Secondary Sales Verification"}, {"code": "R238", "name": "Order Summary"}, {"code": "R252", "name": "Outlet Sales"}, {"code": "R260", "name": "PJP List (Hierarchy)"}, {"code": "R263", "name": "Retailer Discounts"}, {"code": "R265", "name": "Sales Return Report"}, {"code": "R267", "name": "Order Analysis Discounted Outlets"}, {"code": "R285", "name": "Sales Return Posting"}, {"code": "R293", "name": "Pack Wise Order Summary"}, {"code": "R298", "name": "PSR Attendance (Detail)"}, {"code": "R301", "name": "Lifting / Distributor and Order (Secondary User)"}, {"code": "R307", "name": "PSR Targets vs Attainment"}, {"code": "R310", "name": "Market Visit Tracking"}, {"code": "R311", "name": "Order Booker / Outlet Activity (Secondary User)"}, {"code": "R315", "name": "PSR Attendance (Secondary User)"}, {"code": "R316", "name": "Market Visit Summary (Detail)"}, {"code": "R804", "name": "Attendance Report"}, {"code": "R789", "name": "Dispatch Summary"}, {"code": "R785", "name": "WEC Route Coverage"}, {"code": "R784", "name": "WEC Work With"}, {"code": "R781", "name": "WEC Planned"}, {"code": "R777", "name": "Back Order Report"}, {"code": "R712", "name": "Distributor Wise"}, {"code": "R836", "name": "Competition Evaluation"}, {"code": "F71", "name": "Outlet List"}];
+const REPORTS = [{"name": "Sales / Package and Outlet"}, {"name": "Sales / Package and Outlet (Discounted and Non-Discounted)"}, {"name": "Order based Sales Summary"}, {"name": "Stock Summary"}, {"name": "Order Booker / Outlet Activity"}, {"name": "Backorder Summary"}, {"name": "Lifting / Package and Distributor"}, {"name": "Order Booker Tracking"}, {"name": "Timestamp Analysis"}, {"name": "PJP List"}, {"name": "Unproductive Outlets"}, {"name": "Distributor Ledger"}, {"name": "Outlet Sales"}, {"name": "Lifting vs. Secondary"}, {"name": "Order Booker Tracking (Secondary User)"}, {"name": "PJP List (Secondary User)"}, {"name": "Lifting Orders (Secondary User)"}, {"name": "Order Booker Sales (Secondary User)"}, {"name": "Secondary Sales Verification"}, {"name": "Order Summary"}, {"name": "Outlet Sales (Dashboard)"}, {"name": "PJP List (Hierarchy)"}, {"name": "Retailer Discounts"}, {"name": "Sales Return Report"}, {"name": "Order Analysis Discounted Outlets"}, {"name": "Sales Return Posting"}, {"name": "Pack Wise Order Summary"}, {"name": "PSR Attendance (Detail)"}, {"name": "Lifting / Distributor and Order (Secondary User)"}, {"name": "PSR Targets vs Attainment"}, {"name": "Market Visit Tracking"}, {"name": "Order Booker / Outlet Activity (Secondary User)"}, {"name": "PSR Attendance (Secondary User)"}, {"name": "Market Visit Summary (Detail)"}, {"name": "Attendance Report"}, {"name": "Dispatch Summary"}, {"name": "WEC Route Coverage"}, {"name": "WEC Work With"}, {"name": "WEC Planned"}, {"name": "Back Order Report"}, {"name": "Distributor Wise"}, {"name": "Competition Evaluation"}, {"name": "Outlet List"}, {"name": "Order Booking"}, {"name": "Order Invoicing"}, {"name": "Order Cancelling"}];
 
 const REPORT_VIEWS = {
-  "R238": async (box) => { await ordersList(box, await rpc("app_list_orders", creds()) || []); },
-  "R112": async (box) => {
+  "Order Summary": async (box) => {
     const rows = await rpc("app_list_orders", creds()) || [];
     const by = {};
     rows.forEach(r => { by[r.status] = (by[r.status] || 0) + 1; });
     Object.keys(by).forEach(k => box.appendChild(h("div", statusLabel(k) + ": " + by[k], "list-item")));
     if (rows.length === 0) box.appendChild(h("div", "Abhi koi order nahi.", "small"));
   },
-  "R145": async (box) => { await ordersList(box, (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "cancelled")); },
-  "F71": async (box) => {
+  "Order Booking": async (box) => { await ordersList(box, await rpc("app_list_orders", creds()) || []); },
+  "Order Invoicing": async (box) => {
+    const rows = (await rpc("app_list_orders", creds()) || []).filter(o => ["approved","dispatched","shipping","delivered"].includes(o.status));
+    await ordersList(box, rows);
+  },
+  "Order Cancelling": async (box) => { await ordersList(box, (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "cancelled")); },
+  "Outlet List": async (box) => {
     const shops = await rpc("app_list_shops", creds()) || [];
     if (shops.length === 0) box.appendChild(h("div", "Koi approved outlet nahi.", "small"));
     shops.forEach(x => box.appendChild(h("div", x.shop_name, "list-item")));
   },
-  "R252": async (box) => { await ordersList(box, await rpc("app_list_orders", creds()) || []); }
+  "Outlet Sales": async (box) => { await ordersList(box, await rpc("app_list_orders", creds()) || []); }
 };
 
 const EXCEL_FILES = [
@@ -438,14 +503,14 @@ async function reportCenter(box, label) {
   const draw = () => {
     const q = $("repSearch").value.trim().toLowerCase();
     list.textContent = "";
-    REPORTS.filter(r => (r.code + " " + r.name).toLowerCase().includes(q)).forEach(r => {
-      const item = h("div", r.code + " - " + r.name, "list-item");
+    REPORTS.filter(r => r.name.toLowerCase().includes(q)).forEach(r => {
+      const item = h("div", r.name, "list-item");
       item.style.cursor = "pointer";
       item.addEventListener("click", async () => {
         box.textContent = "";
-        box.appendChild(h("p", r.code + " - " + r.name, "section-title"));
+        box.appendChild(h("p", r.name, "section-title"));
         box.appendChild(button("Wapas reports par", () => renderSection(label), true));
-        const view = REPORT_VIEWS[r.code];
+        const view = REPORT_VIEWS[r.name];
         if (!view) { box.appendChild(h("div", "Ye report ka data abhi connect nahi hua. Agle steps mein banega.", "small")); return; }
         try { await view(box); } catch (e) { box.appendChild(h("div", "Error: " + e.message, "msg")); }
       });
@@ -486,12 +551,12 @@ async function ordersList(box, rows, actions) {
 async function adminSection(box, label) {
   if (label === "Approval") {
     box.appendChild(h("p", "Password reset requests", "small"));
-    const resets = await rpc("app_list_resets", creds()) || [];
+    const resets = await rpc("app_list_resets", { p_admin_id: currentUser.key, p_admin_pass: currentUser.pass }) || [];
     if (resets.length === 0) box.appendChild(h("div", "Koi reset request nahi.", "small"));
     resets.forEach(r => {
       const item = h("div", r.role + " | ID: " + r.login_id + " | " + r.name, "list-item");
-      item.appendChild(button("Approve", async () => { await rpc("app_decide_reset", { ...creds(), p_admin_id: currentUser.key, p_admin_pass: currentUser.pass, p_request_id: r.request_id, p_approve: true }); renderSection(label); }));
-      item.appendChild(button("Reject", async () => { await rpc("app_decide_reset", { ...creds(), p_admin_id: currentUser.key, p_admin_pass: currentUser.pass, p_request_id: r.request_id, p_approve: false }); renderSection(label); }, true));
+      item.appendChild(button("Approve", async () => { await rpc("app_decide_reset", { p_admin_id: currentUser.key, p_admin_pass: currentUser.pass, p_request_id: r.request_id, p_approve: true }); renderSection(label); }));
+      item.appendChild(button("Reject", async () => { await rpc("app_decide_reset", { p_admin_id: currentUser.key, p_admin_pass: currentUser.pass, p_request_id: r.request_id, p_approve: false }); renderSection(label); }, true));
       box.appendChild(item);
     });
     box.appendChild(h("p", "Pending orders", "small"));
@@ -555,6 +620,7 @@ async function adminSection(box, label) {
     return;
   }
   if (label === "Users aur IDs") return accountSection(box, label, ["user", "shopkeeper"]);
+  if (label === "Outlet Assign") return assignSection(box, label);
   if (label === "Discounts aur Promos") return promoDiscountSection(box, label);
   if (label === "Packs aur Bulk Rate") return packsBulkSection(box, label);
   if (label === "Account Number") {
@@ -575,6 +641,7 @@ async function adminSection(box, label) {
 
 async function userSection(box, label) {
   if (label === "Employer aur Booker IDs") return accountSection(box, label, ["employer", "order_booker"]);
+  if (label === "Outlets") return assignSection(box, label);
   if (label === "Shopkeeper Orders") {
     const rows = (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "pending_approval");
     await ordersList(box, rows, (item, o) => {
@@ -633,14 +700,11 @@ async function bookerSection(box, label) {
   if (label === "Order Place" || label === "Order") return orderForm(box, label);
   if (label === "Shop Register") return shopForm(box, label);
   if (label === "Attendance") return attendanceSection(box, label);
+  if (label === "Sync aur Configure") return syncSection(box, label);
+  if (label === "Record Sales") return recordSalesSection(box, label);
   if (label === "Tokens") return tokensSection(box, label);
   if (label === "KPIs") return kpiSection(box);
-  if (label === "Outlets") {
-    const shops = await rpc("app_list_shops", creds()) || [];
-    shops.forEach(s => box.appendChild(h("div", s.shop_name, "list-item")));
-    if (shops.length === 0) box.appendChild(h("div", "Koi outlet assign nahi.", "small"));
-    return;
-  }
+  if (label === "Outlets") return outletsSection(box, label);
   box.appendChild(h("div", "Ye section agle step mein banega.", "small"));
 }
 
@@ -731,7 +795,17 @@ async function attendanceSection(box, label) {
 }
 
 async function kpiSection(box) {
-  const k = await rpc("app_booker_kpis", creds()) || {};
+  const sales = await rpc("app_booker_sales_summary", creds()) || {};
+  const k0 = await rpc("app_booker_kpis", creds()) || {};
+  [
+    ["Aaj ke sales entries", sales.entries_today || 0],
+    ["Aaj ke total invoices", sales.invoices_today || 0],
+    ["Aaj ke unique SKUs", sales.skus_today || 0],
+    ["Is mahine ke total invoices", sales.invoices_month || 0],
+    ["Assigned outlets", k0.outlets || 0],
+    ["Aaj ke orders", k0.orders_today || 0]
+  ].forEach(r => box.appendChild(h("div", r[0] + ": " + r[1], "list-item")));
+  return;
   const rows = [
     ["Assigned outlets", k.outlets || 0],
     ["Aaj ke orders", k.orders_today || 0],
@@ -778,6 +852,116 @@ function claimForm(box, label, o) {
     m.className = res.status === "auto_rejected" ? "msg" : "msg ok";
   }));
   box.appendChild(button("Wapas", () => renderSection(label), true));
+}
+
+async function syncSection(box, label) {
+  box.appendChild(h("div", "Data fetch aur update karein: outlets, products, packs aur promos.", "small"));
+  const out = note(box, "");
+  box.appendChild(button("Data fetch / update", async () => {
+    const d = await rpc("app_sync_data", creds());
+    if (!d) { out.textContent = "Sync nahi hua"; out.className = "msg"; return; }
+    out.textContent = "Ho gaya. Outlets: " + d.outlets + " | Products: " + d.products + " | Packs: " + d.packs + " | Promos: " + ((d.promos || []).join(", ") || "koi nahi") + " | " + d.synced_at;
+    out.className = "msg ok";
+  }));
+  box.appendChild(button("Password badlein", () => {
+    $("oldPass").value = ""; $("newPass").value = ""; setMsg($("changeMsg"), "");
+    show("screenChange");
+  }, true));
+}
+
+async function recordSalesSection(box, label) {
+  const shops = await rpc("app_list_shops", creds()) || [];
+  const sel = h("select"); sel.id = "rsShop";
+  sel.style.cssText = "width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;border:0.5px solid rgba(255,255,255,0.25);";
+  shops.forEach(x => { const o = h("option", x.shop_name); o.value = x.id; sel.appendChild(o); });
+  if (shops.length === 0) sel.appendChild(h("option", "Koi outlet nahi"));
+  box.appendChild(h("label", "Outlet"));
+  box.appendChild(sel);
+  box.appendChild(field("Total Invoices", "rsInv", "number", "0"));
+  box.appendChild(field("Unique SKUs", "rsSku", "number", "0"));
+  const m = note(box, "");
+  box.appendChild(button("Save", async () => {
+    const res = await rpc("app_record_sales", { ...creds(), p_shop: sel.value, p_invoices: Number($("rsInv").value) || 0, p_skus: Number($("rsSku").value) || 0 });
+    if (res && res.ok) { m.textContent = "Save ho gaya"; m.className = "msg ok"; renderSection(label); }
+    else { m.textContent = (res && res.error) || "Save nahi hua"; m.className = "msg"; }
+  }));
+}
+
+const VISIT_STATUS = {
+  ordered: { label: "Order ho gaya", color: "#16a34a" },
+  closed: { label: "Band (closed)", color: "#fca5a5" },
+  has_stock: { label: "Stock already hai", color: "#f97316" }
+};
+
+function weekStrip(box) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
+  const row = h("div", "", "list-item");
+  row.style.cssText = "display:flex;justify-content:space-between;gap:4px;text-align:center;";
+  for (let i = -3; i <= 3; i++) {
+    const d = new Date(today); d.setDate(today.getDate() + i);
+    const cell = h("div");
+    cell.style.cssText = "flex:1;padding:6px 0;border-radius:8px;font-size:12px;" + (i === 0 ? "background:#c9a86a;color:#111827;font-weight:600;" : "");
+    cell.textContent = days[d.getDay()] + " " + d.getDate();
+    row.appendChild(cell);
+  }
+  box.appendChild(row);
+}
+
+async function outletsSection(box, label) {
+  weekStrip(box);
+  const legend = h("div", "Green: order ho gaya | Light red: band | Orange: stock already hai", "small");
+  box.appendChild(legend);
+  const rows = await rpc("app_my_outlets", creds()) || [];
+  if (rows.length === 0) { box.appendChild(h("div", "Aapko abhi koi outlet assign nahi hua.", "small")); return; }
+  rows.forEach(o => {
+    const st = VISIT_STATUS[o.today];
+    const card = h("div", "", "list-item");
+    card.style.borderLeft = "6px solid " + (st ? st.color : "#6b7280");
+    card.appendChild(h("div", o.shop, "section-title"));
+    card.appendChild(h("div", o.address + " | " + o.phone, "small"));
+    card.appendChild(h("div", "Aaj ki halat: " + (st ? st.label : "abhi koi entry nahi"), "small"));
+    const map = h("a", "Map par dekhein");
+    map.href = "https://www.google.com/maps?q=" + o.lat + "," + o.lng;
+    map.target = "_blank"; map.rel = "noopener";
+    map.style.cssText = "color:#e8d7b0;text-decoration:underline;font-size:13px;";
+    card.appendChild(map);
+    const btns = h("div"); btns.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;";
+    Object.keys(VISIT_STATUS).forEach(k => {
+      const b = button(VISIT_STATUS[k].label, async () => {
+        await rpc("app_set_visit", { ...creds(), p_shop: o.shop_id, p_status: k });
+        renderSection(label);
+      }, true);
+      b.style.width = "auto"; b.style.marginTop = "0";
+      btns.appendChild(b);
+    });
+    card.appendChild(btns);
+    box.appendChild(card);
+  });
+}
+
+async function assignSection(box, label) {
+  box.appendChild(h("p", "Outlet assign karein (order booker ko)", "small"));
+  const bookers = await rpc("app_list_bookers", creds()) || [];
+  const shops = await rpc("app_list_shops", creds()) || [];
+  if (bookers.length === 0) { box.appendChild(h("div", "Abhi koi order booker nahi. Pehle ID banayein.", "small")); return; }
+  if (shops.length === 0) { box.appendChild(h("div", "Abhi koi approved outlet nahi.", "small")); return; }
+  const m = note(box, "");
+  bookers.forEach(bk => {
+    box.appendChild(h("p", bk.name + " (" + bk.login_id + ")", "section-title"));
+    shops.forEach(sh => {
+      const row = h("label", sh.shop_name, "list-item");
+      const cb = h("input"); cb.type = "checkbox"; cb.style.width = "auto"; cb.style.marginRight = "8px";
+      cb.checked = (bk.outlets || []).includes(sh.id);
+      cb.addEventListener("change", async () => {
+        const ok = await rpc("app_set_assignment", { ...creds(), p_booker_login: bk.login_id, p_shop: sh.id, p_on: cb.checked });
+        m.textContent = ok ? "Assignment save ho gaya" : "Ye assignment save nahi hua";
+        m.className = ok ? "msg ok" : "msg";
+      });
+      row.prepend(cb);
+      box.appendChild(row);
+    });
+  });
 }
 
 async function shopForm(box, label) {
@@ -852,6 +1036,98 @@ function openFromHash() {
 }
 window.addEventListener("hashchange", openFromHash);
 openFromHash();
+// SHOPKEEPER LOGIN BY PHONE (+92)
+function normPhone(v) {
+  let d = String(v || "").replace(/\D/g, "");
+  if (d.startsWith("92")) d = d.slice(2);
+  if (d.startsWith("0")) d = d.slice(1);
+  return (d.length === 10 && d[0] === "3") ? "+92" + d : null;
+}
+let shopCaptcha = "";
+function newShopCaptcha() {
+  const pools = [
+    "0123456789",                                  // numbers
+    "ABCDEFGHJKLMNPQRSTUVWXYZ",                    // English letters
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"             // mixed
+  ];
+  const pool = pools[Math.floor(Math.random() * pools.length)];
+  let code = "";
+  for (let i = 0; i < 5; i++) code += pool[Math.floor(Math.random() * pool.length)];
+  shopCaptcha = code;
+  const box = $("shopCaptcha");
+  box.textContent = code;
+  box.style.transform = "skewX(" + (Math.random() * 16 - 8).toFixed(1) + "deg) rotate(" + (Math.random() * 6 - 3).toFixed(1) + "deg)";
+  $("shopCode").value = "";
+}
+$("shopCaptchaRefresh").addEventListener("click", newShopCaptcha);
+
+function openShopLogin() {
+  const saved = localStorage.getItem("ak_phone") || "";
+  $("shopPhone").value = saved ? saved.replace("+92", "") : "";
+  $("shopRemember").checked = !!saved;
+  $("shopPin").value = "";
+  newShopCaptcha();
+  setMsg($("shopMsg"), "");
+  show("screenShop");
+}
+function openShopReg(phone) {
+  $("regPhoneShow").textContent = "Phone: " + phone;
+  $("rgShopPhone").value = phone;
+  ["rgName","rgShop","rgAddr","rgLat","rgLng","rgImg","rgPass"].forEach(id => $(id).value = "");
+  setMsg($("rgMsg"), "");
+  show("screenShopReg");
+}
+$("shopBack").addEventListener("click", () => show("screenRoles"));
+$("shopToReg").addEventListener("click", () => {
+  const p = normPhone($("shopPhone").value);
+  if (!p) { setMsg($("shopMsg"), "Phone +92 ke baad 10 digits (3 se shuru) likhein"); return; }
+  openShopReg(p);
+});
+$("shopSignIn").addEventListener("click", async () => {
+  const p = normPhone($("shopPhone").value);
+  if (!p) { setMsg($("shopMsg"), "Phone +92 ke baad 10 digits (3 se shuru) likhein"); return; }
+  // every Login press checks the code shown on screen, then the captcha refreshes automatically
+  const expectedCode = shopCaptcha;
+  const enteredCode = ($("shopCode").value || "").replace(/\s/g, "").toUpperCase();
+  newShopCaptcha();
+  if (enteredCode !== expectedCode.toUpperCase()) {
+    setMsg($("shopMsg"), "Code galat hai, naya code dekh kar dobara likhein");
+    return;
+  }
+  const pin = $("shopPin").value;
+  try {
+    const exists = await rpc("app_phone_exists", { p_phone: p });
+    if (!exists) { openShopReg(p); return; }
+    if (!pin) { setMsg($("shopMsg"), "PIN / password daalein"); return; }
+    const user = await rpc("app_login", { p_id: p, p_pass: pin });
+    if (!user || user.role !== "shopkeeper") { setMsg($("shopMsg"), "PIN / password galat hai"); newShopCaptcha(); return; }
+    if ($("shopRemember").checked) localStorage.setItem("ak_phone", p); else localStorage.removeItem("ak_phone");
+    currentRole = "shopkeeper";
+    currentUser = { key: user.login_id, name: user.name, des: user.designation, pass: pin, role: user.role };
+    openHome();
+  } catch (e) {
+    setMsg($("shopMsg"), "Error: " + e.message);
+  }
+});
+$("rgBack").addEventListener("click", () => openShopLogin());
+$("rgSubmit").addEventListener("click", async () => {
+  const phone = normPhone($("rgShopPhone").value) || normPhone($("regPhoneShow").textContent.replace("Phone: ", ""));
+  const pass = $("rgPass").value;
+  if (pass.length < 6) { setMsg($("rgMsg"), "Password kam az kam 6 characters ka ho"); return; }
+  try {
+    const res = await rpc("app_self_register", {
+      p_phone: phone, p_pass: pass,
+      p_shopkeeper_name: $("rgName").value.trim(), p_shop_name: $("rgShop").value.trim(),
+      p_shop_phone: $("rgShopPhone").value.trim(), p_address: $("rgAddr").value.trim(),
+      p_lat: Number($("rgLat").value), p_lng: Number($("rgLng").value), p_image: $("rgImg").value.trim()
+    });
+    const msgs = { exists: "Ye phone pehle se registered hai, login karein", "phone format": "Phone format galat hai", "short password": "Password kam az kam 6 characters ka ho" };
+    if (res && res.ok) { setMsg($("rgMsg"), "Registration ho gayi. Admin approval ke baad shop active hogi.", true); }
+    else setMsg($("rgMsg"), msgs[res && res.error] || "Registration nahi hui, sab fields bharein");
+  } catch (e) {
+    setMsg($("rgMsg"), "Error: " + e.message);
+  }
+});
 </script>
 </body>
 </html>
