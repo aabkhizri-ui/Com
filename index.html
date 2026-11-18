@@ -54,6 +54,7 @@ body.light .msg.ok { color: #15803d; }
 .sidebar .list-item { cursor: pointer; margin-top: 6px; }
 body.light .sidebar { background: #ffffff; color: #111827; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 <button id="themeBtn">Light</button>
@@ -149,9 +150,9 @@ const DEMO_USERS = {
 };
 
 const PILLS = {
-  admin: ["Approval", "Registration", "Dispatch", "Review", "Sales", "Discounts aur Promos", "Packs aur Bulk Rate", "Tokens (Noor Coins)", "Khizr Rewards", "Users aur IDs", "Products", "Account Number", "Reports"],
-  user: ["Shopkeeper Orders", "Outlets", "Dispatch Status", "My Orders", "Employer aur Booker IDs"],
-  employer: ["Shopkeeper Orders", "Dispatch", "Printing", "Shipping Status"],
+  admin: ["Approval", "Registration", "Dispatch", "Review", "Sales", "Discounts aur Promos", "Packs aur Bulk Rate", "Tokens (Noor Coins)", "Khizr Rewards", "Users aur IDs", "Report Center", "Products", "Account Number", "Reports"],
+  user: ["Shopkeeper Orders", "Outlets", "Dispatch Status", "My Orders", "Employer aur Booker IDs", "Report Center"],
+  employer: ["Shopkeeper Orders", "Dispatch", "Printing", "Shipping Status", "Report Center"],
   order_booker: ["Order Place", "Shop Register", "Attendance", "KPIs", "Outlets", "Tokens"],
   shopkeeper: ["Order", "My Orders", "Tokens", "Shop Register", "Products"]
 };
@@ -197,10 +198,13 @@ const SB_KEY = "sb_publishable_f59FQL-7C0YvS0bQ6MvyUQ_VZjH26q4";
 async function rpc(name, body) {
   const r = await fetch(SB_URL + "/rest/v1/rpc/" + name, {
     method: "POST",
-    headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json" },
+    headers: { "apikey": SB_KEY, "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
-  if (!r.ok) throw new Error("rpc " + r.status);
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error(name + " (" + r.status + "): " + txt.slice(0, 200));
+  }
   return r.json();
 }
 
@@ -217,7 +221,7 @@ $("loginBtn").addEventListener("click", async () => {
     setMsg($("loginMsg"), "");
     openHome();
   } catch (e) {
-    setMsg($("loginMsg"), "Connection mein masla hai, dobara koshish karein");
+    setMsg($("loginMsg"), "Error: " + (e && e.message ? e.message : e));
   }
 });
 
@@ -372,6 +376,85 @@ async function packsBulkSection(box, label) {
     bm.textContent = r ? "Bulk rate add ho gaya" : "Ye add nahi hua"; renderSection(label);
   }));
 }
+const REPORTS = [{"code": "R106", "name": "Sales / Package and Outlet"}, {"code": "R108", "name": "Sales / Package and Outlet (Discounted and Non-Discounted)"}, {"code": "R112", "name": "Order based Sales Summary"}, {"code": "R115", "name": "Stock Summary"}, {"code": "R116", "name": "Order Booker / Outlet Activity"}, {"code": "R117", "name": "Backorder Summary"}, {"code": "R119", "name": "Lifting / Package and Distributor"}, {"code": "R120", "name": "Order Booker Tracking"}, {"code": "R123", "name": "Timestamp Analysis"}, {"code": "R128", "name": "PJP List"}, {"code": "R145", "name": "Cancelled Orders"}, {"code": "R165", "name": "Unproductive Outlets"}, {"code": "R177", "name": "Distributor Ledger"}, {"code": "R193", "name": "Outlet Sales"}, {"code": "R208", "name": "Lifting vs. Secondary"}, {"code": "R209", "name": "Order Booker Tracking (Secondary User)"}, {"code": "R210", "name": "PJP List (Secondary User)"}, {"code": "R212", "name": "Lifting Orders (Secondary User)"}, {"code": "R214", "name": "Order Booker Sales (Secondary User)"}, {"code": "R226", "name": "Secondary Sales Verification"}, {"code": "R238", "name": "Order Summary"}, {"code": "R252", "name": "Outlet Sales"}, {"code": "R260", "name": "PJP List (Hierarchy)"}, {"code": "R263", "name": "Retailer Discounts"}, {"code": "R265", "name": "Sales Return Report"}, {"code": "R267", "name": "Order Analysis Discounted Outlets"}, {"code": "R285", "name": "Sales Return Posting"}, {"code": "R293", "name": "Pack Wise Order Summary"}, {"code": "R298", "name": "PSR Attendance (Detail)"}, {"code": "R301", "name": "Lifting / Distributor and Order (Secondary User)"}, {"code": "R307", "name": "PSR Targets vs Attainment"}, {"code": "R310", "name": "Market Visit Tracking"}, {"code": "R311", "name": "Order Booker / Outlet Activity (Secondary User)"}, {"code": "R315", "name": "PSR Attendance (Secondary User)"}, {"code": "R316", "name": "Market Visit Summary (Detail)"}, {"code": "R804", "name": "Attendance Report"}, {"code": "R789", "name": "Dispatch Summary"}, {"code": "R785", "name": "WEC Route Coverage"}, {"code": "R784", "name": "WEC Work With"}, {"code": "R781", "name": "WEC Planned"}, {"code": "R777", "name": "Back Order Report"}, {"code": "R712", "name": "Distributor Wise"}, {"code": "R836", "name": "Competition Evaluation"}, {"code": "F71", "name": "Outlet List"}];
+
+const REPORT_VIEWS = {
+  "R238": async (box) => { await ordersList(box, await rpc("app_list_orders", creds()) || []); },
+  "R112": async (box) => {
+    const rows = await rpc("app_list_orders", creds()) || [];
+    const by = {};
+    rows.forEach(r => { by[r.status] = (by[r.status] || 0) + 1; });
+    Object.keys(by).forEach(k => box.appendChild(h("div", statusLabel(k) + ": " + by[k], "list-item")));
+    if (rows.length === 0) box.appendChild(h("div", "Abhi koi order nahi.", "small"));
+  },
+  "R145": async (box) => { await ordersList(box, (await rpc("app_list_orders", creds()) || []).filter(o => o.status === "cancelled")); },
+  "F71": async (box) => {
+    const shops = await rpc("app_list_shops", creds()) || [];
+    if (shops.length === 0) box.appendChild(h("div", "Koi approved outlet nahi.", "small"));
+    shops.forEach(x => box.appendChild(h("div", x.shop_name, "list-item")));
+  },
+  "R252": async (box) => { await ordersList(box, await rpc("app_list_orders", creds()) || []); }
+};
+
+const EXCEL_FILES = [
+  ["shops", "Shop Registration"], ["claims", "Token Claims"], ["orders", "Orders"], ["cancelled", "Cancelled Orders"],
+  ["outlets", "Outlet List"], ["dispatches", "Dispatches"], ["products", "Products"], ["packs", "Packs 6+2 aur 12+4"],
+  ["bulk", "Bulk Rates"], ["discounts", "Special Discounts"], ["promos", "Promos aur Offers"], ["rewards", "Khizr Rewards"],
+  ["accounts", "User aur Employer IDs"], ["attendance", "Attendance"], ["ledger", "Noor Coins Ledger"]
+];
+
+async function downloadExcel(kind, title, msgBox) {
+  if (typeof XLSX === "undefined") { msgBox.textContent = "Excel library load nahi hui, internet check karein"; msgBox.className = "msg"; return; }
+  const rows = await rpc("app_export", { ...creds(), p_kind: kind });
+  if (rows === null) { msgBox.textContent = title + ": ye file aapke role par available nahi"; msgBox.className = "msg"; return; }
+  const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{ "Note": "Abhi koi data nahi" }]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, title.slice(0, 30));
+  const stamp = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, "AabEKhizri_" + title.replace(/[^A-Za-z0-9]+/g, "_") + "_" + stamp + ".xlsx");
+  msgBox.textContent = title + " Excel file ban gayi (" + rows.length + " rows)";
+  msgBox.className = "msg ok";
+}
+
+function excelPanel(box) {
+  box.appendChild(h("p", "Excel files (har file alag)", "small"));
+  const m = note(box, "");
+  EXCEL_FILES.forEach(([kind, title]) => {
+    box.appendChild(button("Excel: " + title, async () => {
+      try { await downloadExcel(kind, title, m); }
+      catch (e) { m.textContent = "Error: " + e.message; m.className = "msg"; }
+    }, true));
+  });
+}
+
+async function reportCenter(box, label) {
+  box.textContent = "";
+  box.appendChild(h("p", "Report Center", "section-title"));
+  excelPanel(box);
+  const search = field("Search reports", "repSearch");
+  box.appendChild(search);
+  const list = h("div");
+  box.appendChild(list);
+  const draw = () => {
+    const q = $("repSearch").value.trim().toLowerCase();
+    list.textContent = "";
+    REPORTS.filter(r => (r.code + " " + r.name).toLowerCase().includes(q)).forEach(r => {
+      const item = h("div", r.code + " - " + r.name, "list-item");
+      item.style.cursor = "pointer";
+      item.addEventListener("click", async () => {
+        box.textContent = "";
+        box.appendChild(h("p", r.code + " - " + r.name, "section-title"));
+        box.appendChild(button("Wapas reports par", () => renderSection(label), true));
+        const view = REPORT_VIEWS[r.code];
+        if (!view) { box.appendChild(h("div", "Ye report ka data abhi connect nahi hua. Agle steps mein banega.", "small")); return; }
+        try { await view(box); } catch (e) { box.appendChild(h("div", "Error: " + e.message, "msg")); }
+      });
+      list.appendChild(item);
+    });
+  };
+  $("repSearch").addEventListener("input", draw);
+  draw();
+}
 
 // ---------- sections ----------
 async function renderSection(label) {
@@ -379,13 +462,14 @@ async function renderSection(label) {
   box.textContent = "";
   box.appendChild(h("p", label, "section-title"));
   try {
-    if (currentRole === "admin") return await adminSection(box, label);
+    if (label === "Report Center") return reportCenter(box, label);
+  if (currentRole === "admin") return await adminSection(box, label);
     if (currentRole === "user") return await userSection(box, label);
     if (currentRole === "employer") return await employerSection(box, label);
     if (currentRole === "order_booker") return await bookerSection(box, label);
     if (currentRole === "shopkeeper") return await shopSection(box, label);
   } catch (e) {
-    note(box, "Connection mein masla hai, dobara koshish karein");
+    note(box, "Error: " + (e && e.message ? e.message : e));
   }
 }
 
